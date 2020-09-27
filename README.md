@@ -4,14 +4,14 @@
 **uzrnem/uzrnem** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
 Here are some ideas to get you started:
-
+-->
 - 🔭 I’m currently working on Java Spring Boot.
 - 🌱 I’m currently learning Ruby on Rails.
 - 🤔 I’m looking for help with Writing Blogs.
 - 💬 Ask me about Backend.
 - 📫 How to reach me: [instagram].
 - ⚡ Fun fact: I love collecting old, unique and new currencies, and I am Cuber.
--->
+
 
 ### Connect with me:
 
