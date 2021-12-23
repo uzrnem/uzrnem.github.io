@@ -3,10 +3,11 @@
 <!--
 **uzrnem/uzrnem** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
-Please visit https://gemtul.firebaseapp.com/
-
 Here are some ideas to get you started:
 -->
+
+Please visit [gemtul]
+
 - 🔭 I’m currently working on Go.
 - 💬 Ask me about Backend.
 - 📫 My Website Devtul: [devtul].
@@ -26,6 +27,7 @@ Here are some ideas to get you started:
 <img align="left" alt="codeSTACKr's Github Stats" src="https://github-readme-stats.codestackr.vercel.app/api?username=uzrnem&show_icons=true&hide_border=true" />
 
 
-[devtul]: https://instagram.com/_uzrnem
+[devtul]: https://devtuk.firebaseapp.com
+[gemtul]: https://gemtul.firebaseapp.com
 [nottebukk]: https://nottebukk.firebaseapp.com
 [linkedin]: https://www.linkedin.com/in/uzrnem
