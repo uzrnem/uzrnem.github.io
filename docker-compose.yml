@@ -8,14 +8,13 @@ services:
   db:
     image: mysql:latest
     container_name: mysql
-    restart: always
+    restart: always #restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test_db
     ports:
       - "3306:3306"
     expose:
-      # Opens port 3306 on the container
       - "3306"
     volumes:
       #local dir/files: docker dir/files
@@ -35,7 +34,6 @@ services:
       # PMA_ARBITRARY: 1 // IF HOST is required, in case of local mysql and docker php myadmin
       PMA_USER: root
       PMA_PASSWORD: root
-    # restart: always
     ports:
       - "8000:80"
     networks:
@@ -46,7 +44,6 @@ services:
       - db
     image: expense:1.0.0
     container_name: expenses
-    #restart: unless-stopped
     environment:
       EXP_CONFIG_DATABASE_NAME: expense
       EXP_CONFIG_USER_NAME: root
@@ -55,7 +52,6 @@ services:
     ports:
       - "9000:9000"
     expose:
-      # Opens port 3306 on the container
       - "9000"
     networks:
       - app-tier
