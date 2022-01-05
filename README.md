@@ -27,9 +27,17 @@ Please visit [gemtul]
 <p align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=uzrnem&bg_color=30,19c9fa,1977fa&title_color=fff&text_color=fff&icon_color=023047&show_icons=true">
 </p>
-<p align="center">
-<img src="https://github-readme-stats.codestackr.vercel.app/api?username=uzrnem&show_icons=true" />
-</p>
+
+- Customizing repo card
+
+[![SnakeGame](https://github-readme-stats.vercel.app/api/pin/?username=uzrnem&repo=snake-java-game)](https://github.com/uzrnem/snake-java-game&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
+
+- Top languages
+
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra)](https://github.com/anuraghazra/github-readme-stats)
+
+![](https://github.com/uzrnem/github-stats/blob/master/generated/languages.svg)
+
 [devtul]: https://devtuk.firebaseapp.com
 [gemtul]: https://gemtul.firebaseapp.com
 [nottebukk]: https://nottebukk.firebaseapp.com
