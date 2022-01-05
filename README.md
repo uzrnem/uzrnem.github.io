@@ -25,7 +25,9 @@ Please visit [gemtul]
 
 ### Github Stats:
 <img align="left" alt="codeSTACKr's Github Stats" src="https://github-readme-stats.codestackr.vercel.app/api?username=uzrnem&show_icons=true&hide_border=true" />
-
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=uzrnem&bg_color=30,19c9fa,1977fa&title_color=fff&text_color=fff&icon_color=023047&show_icons=true">
+</p>
 
 [devtul]: https://devtuk.firebaseapp.com
 [gemtul]: https://gemtul.firebaseapp.com
