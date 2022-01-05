@@ -30,11 +30,11 @@ Please visit [gemtul]
 
 - Customizing repo card
 
-[![SnakeGame](https://github-readme-stats.vercel.app/api/pin/?username=uzrnem&repo=snake-java-game)](https://github.com/uzrnem/snake-java-game&title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
+[![SnakeGame](https://github-readme-stats.vercel.app/api/pin/?username=uzrnem&repo=snake-java-game)](https://github.com/uzrnem/snake-java-game?title_color=fff&icon_color=f9f9f9&text_color=9f9f9f&bg_color=151515)
 
 - Top languages
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra)](https://github.com/anuraghazra/github-readme-stats)
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=uzrnem)](https://github.com/uzrnem/github-readme-stats)
 
 ![](https://github.com/uzrnem/github-stats/blob/master/generated/languages.svg)
 
