@@ -1,0 +1,101 @@
+pom.xml
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+application.properties
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://${MYSQL_HOST:localhost}:3306/${MYSQL_DATABASE:db_example}
+spring.datasource.username=${MYSQL_USERNAME:root}
+spring.datasource.password=${MYSQL_PASSWORD:pass}
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.validationQuery=SELECT 1
+
+spring.jpa.show-sql=true
+
+User.Model
+
+package com.github.uzrnem.contactlist.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Integer id;
+    private String name;
+    private String email;
+    private String password;
+
+    public User() {
+    }
+
+    public User(Integer id, String name, String email, String password) {
+        super();
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
+
+
+User.Repository
+package com.github.uzrnem.contactlist.repository;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.github.uzrnem.contactlist.model.User;
+
+public interface UserRepository extends CrudRepository<User, Integer> {
+
+}
+
+Application
+    User n = new User();
+    n.setName(name);
+    n.setEmail(email);
+    userRepository.save(n);
+    return "Saved";
