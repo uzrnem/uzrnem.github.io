@@ -111,6 +111,18 @@
 								Date
 							</a>
 						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#after">After</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#after-or-equals">After or Equals</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#before">Before</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#before-or-equals">Before or Equals</a>
+						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#string">
 								<span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>
@@ -316,16 +328,20 @@ console.log( res.message) //"validation passed"
 
 var res = validate({id: 'fdalse'});
 console.log( res.message) //"id is not boolean"</code></pre>
-						</section>
+            </section>
           </article>
           <article class="docs-article" id="date">
             <header class="docs-header">
-              <h1 class="docs-heading" style="margin-bottom: 0rem !important;" style="margin-bottom: 0rem !important;">Date</h1>
+              <h1 class="docs-heading">date</h1>
+              <section class="docs-intro">
+                <p>Various validation for date data types</p>
+              </section>
               <!--//docs-intro-->
             </header>
             <section class="docs-section">
+              <h2 class="section-heading">Date</h2>
               <p>Check that given input is date</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validate = parser({ datecolumn: 'date' })
 
 var res = validate({ datecolumn : new Date() });
@@ -333,6 +349,130 @@ console.log( res.message) //"validation passed"
 
 var res = validate({ datecolumn : 'dmsk' });
 console.log( res.message) //"datecolumn is not in date format"</code></pre>
+						</section>
+            <section class="docs-section" id="after">
+              <h2 class="section-heading">After</h2>
+              <p>Check that given input date is after specific date</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ datecolumn: 'after:yesterday' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after:created_at' })
+var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after:2022-05-14' })
+var res = validate({ datecolumn : '2022-05-15' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after:tomorrow' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"datecolumn is not after tomorrow"
+
+var validate = parser({ datecolumn: 'after:2022-09-10' })
+var res = validate({ datecolumn : '2022-09-10' });
+console.log( res.message) //"datecolumn is not after 2022-09-10"
+
+var validate = parser({ datecolumn: 'after:created_at' })
+var res = validate({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
+console.log( res.message) //"datecolumn is not after created_at"</code></pre>
+						</section>
+            <section class="docs-section" id="after-or-equals">
+              <h2 class="section-heading">After or Equals</h2>
+              <p>Check that given input date is after or equals to specific date</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ datecolumn: 'after_or_equals:yesterday' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after_or_equals:today' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after_or_equals:created_at' })
+var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
+console.log( res.message) //"validation passed"
+var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-15' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after_or_equals:2022-05-14' })
+var res = validate({ datecolumn : '2022-05-15' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'after_or_equals:tomorrow' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"datecolumn is not after or equals to tomorrow"
+
+var validate = parser({ datecolumn: 'after_or_equals:2022-09-10' })
+var res = validate({ datecolumn : '2022-09-09' });
+console.log( res.message) //"datecolumn is not after or equals to 2022-09-10"
+
+var validate = parser({ datecolumn: 'after_or_equals:created_at' })
+var res = validate({ datecolumn : '2022-09-09', created_at: '2022-09-10' });
+console.log( res.message) //"datecolumn is not after or equals to created_at"</code></pre>
+						</section>
+            <section class="docs-section" id="before">
+              <h2 class="section-heading">Before</h2>
+              <p>Check that given input date is before specific date</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ datecolumn: 'before:tomorrow' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before:created_at' })
+var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-16' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before:2022-05-14' })
+var res = validate({ datecolumn : '2022-05-13' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before:yesterday' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"datecolumn is not before yesterday"
+
+var validate = parser({ datecolumn: 'before:2022-09-10' })
+var res = validate({ datecolumn : '2022-09-10' });
+console.log( res.message) //"datecolumn is not before 2022-09-10"
+
+var validate = parser({ datecolumn: 'before:created_at' })
+var res = validate({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
+console.log( res.message) //"datecolumn is not before created_at"</code></pre>
+						</section>
+            <section class="docs-section" id="before-or-equals">
+              <h2 class="section-heading">Before or Equals</h2>
+              <p>Check that given input date is before or equals to specific date</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ datecolumn: 'before_or_equals:tomorrow' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before_or_equals:today' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before_or_equals:created_at' })
+var res = validate({ datecolumn : '2022-05-14', created_at: '2022-05-14' });
+console.log( res.message) //"validation passed"
+var res = validate({ datecolumn : '2022-05-14', created_at: '2022-05-15' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before_or_equals:2022-05-16' })
+var res = validate({ datecolumn : '2022-05-15' });
+console.log( res.message) //"validation passed"
+
+var validate = parser({ datecolumn: 'before_or_equals:yesterday' })
+var res = validate({ datecolumn : new Date() });
+console.log( res.message) //"datecolumn is not before or equals to yesterday"
+
+var validate = parser({ datecolumn: 'before_or_equals:2022-09-10' })
+var res = validate({ datecolumn : '2022-09-11' });
+console.log( res.message) //"datecolumn is not before or equals to 2022-09-10"
+
+var validate = parser({ datecolumn: 'before_or_equals:created_at' })
+var res = validate({ datecolumn : '2022-09-11', created_at: '2022-09-10' });
+console.log( res.message) //"datecolumn is not before or equals to created_at"</code></pre>
 						</section>
           </article>
           <article class="docs-article" id="string">
@@ -507,7 +647,7 @@ console.log( res.message) //"status does not ends with inactive,delete"</code></
 
 					<!--//docs-article-->
           <footer class="footer">
-            <div class="container text-center py-5">
+            <div class="container text-center">
               <small class="copyright">Template Copyright &copy; <a href="https://themes.3rdwavemedia.com/" target="_blank">3rd Wave Media</a></small>
               <ul class="social-list list-unstyled pt-4 mb-0">
                 <li class="list-inline-item"><a href="https://github.com/uzrnem/smooth-validator"><i class="fab fa-github fa-fw"></i></a></li>
