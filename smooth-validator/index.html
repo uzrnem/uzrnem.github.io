@@ -12,7 +12,7 @@
     <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
     <!-- Theme CSS -->  
     <link id="theme-style" rel="stylesheet" href="./assets/css/theme.css">
-    <link rel="stylesheet" href="./assets/css/prism.css">
+    <link rel="stylesheet" href="./assets/prism.css">
   </head>
   <body class="docs-page" class="line-numbers">
     <header class="header fixed-top">
@@ -75,6 +75,9 @@
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#same">Same</a>
 						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#required-if">Required If</a>
+						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#integer">
 								<span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>
@@ -98,6 +101,12 @@
 						</li>
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#lte">Less Than / Equals</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#odd">Odd</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#even">Even</a>
 						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#boolean">
@@ -163,7 +172,19 @@
 							<a class="nav-link scrollto" href="#starts-with">Starts With</a>
 						</li>
             <li class="nav-item">
+							<a class="nav-link scrollto" href="#starts-not-with">Starts Not With</a>
+						</li>
+            <li class="nav-item">
 							<a class="nav-link scrollto" href="#ends-with">Ends With</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#ends-not-with">Ends Not With</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#contains">Contains</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#contains-any">Contains Any</a>
 						</li>
           </ul>
         </nav>
@@ -217,6 +238,24 @@ console.log( res.message) //"validation passed"
 
 var res = validate({});
 console.log( res.message) //"id is required"</code></pre>
+						</section>
+            <section class="docs-section" id="required-if">
+              <h2 class="section-heading">Required If</h2>
+              <p>If variable is required depends on value of other variable, at that time this validation can be used</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ due_date: 'required_if:status,active' })
+
+var res = validate({ due_date: null });
+console.log( res.message) //"validation passed"
+
+var res = validate({ due_date: null, status: 'inactive' });
+console.log( res.message) //"validation passed"
+
+var res = validate({ due_date: new Date(), status: 'active' })
+console.log( res.message) //"validation passed"
+
+var res = validate({ due_date: null, status: 'active' })
+console.log( res.message) //"due_date is required"</code></pre>
 						</section>
             <!--//section-->
             <section class="docs-section" id="same">
@@ -311,6 +350,42 @@ console.log( res.message) //"validation passed"
 var validate = parser({ id: 'lte:marks' })
 var res = validate({ id : 10.1, marks: 10 });
 console.log( res.message) //"id should be less than or equals to marks"</code></pre>
+            </section>
+            <section class="docs-section" id="odd">
+              <h2 class="section-heading">Odd</h2>
+              <p>Confirm that given input is odd number.</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ id: 'odd' })
+
+var res = validate({ id : 9 });
+console.log( res.message) //"validation passed"
+
+var res = validate({ id : "21" });
+console.log( res.message) //"validation passed"
+
+var res = validate({ id : 9.1 });
+console.log( res.message) //"id is not odd number"
+
+var res = validate({ id : 30 });
+console.log( res.message) //"id is not odd number"</code></pre>
+            </section>
+            <section class="docs-section" id="even">
+              <h2 class="section-heading">Even</h2>
+              <p>Confirm that given input is even number.</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ id: 'even' })
+
+var res = validate({ id : 8 });
+console.log( res.message) //"validation passed"
+
+var res = validate({ id : "20" });
+console.log( res.message) //"validation passed"
+
+var res = validate({ id : 8.1 });
+console.log( res.message) //"id is not even number"
+
+var res = validate({ id : 31 });
+console.log( res.message) //"id is not even number"</code></pre>
             </section>
           </article>
           <article class="docs-article" id="boolean">
@@ -631,6 +706,18 @@ console.log( res.message) //"validation passed"
 var res = validate({ status : 'active' });
 console.log( res.message) //"status does not starts with inactive,delete"</code></pre>
 						</section>
+            <section class="docs-section" id="starts-not-with">
+              <h2 class="section-heading">Starts Not With</h2>
+              <p>To verify given input value does not starts with text from given array</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ status: 'starts_not_with:inactive,delete' })
+
+var res = validate({ status : 'active' });
+console.log( res.message) //"validation passed"
+
+var res = validate({ status : 'delete' });
+console.log( res.message) //"status does starts with delete"</code></pre>
+						</section>
             <section class="docs-section" id="ends-with">
               <h2 class="section-heading">Ends With</h2>
               <p>To verify given input value ends with text from given array</p>
@@ -642,6 +729,42 @@ console.log( res.message) //"validation passed"
 
 var res = validate({ status : 'all' });
 console.log( res.message) //"status does not ends with inactive,delete"</code></pre>
+						</section>
+            <section class="docs-section" id="ends-not-with">
+              <h2 class="section-heading">Ends Not With</h2>
+              <p>To verify given input value does not ends with text from given array</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ status: 'ends_not_with:inactive,delete' })
+
+var res = validate({ status : 'status-active' });
+console.log( res.message) //"validation passed"
+
+var res = validate({ status : 'isdelete' });
+console.log( res.message) //"status does ends with 'delete'"</code></pre>
+						</section>
+            <section class="docs-section" id="contains">
+              <h2 class="section-heading">Contains</h2>
+              <p>To verify given input value contains all text from given value or array</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ status: 'contains:in,not' })
+
+var res = validate({ status : 'inot' });
+console.log( res.message) //"validation passed"
+
+var res = validate({ status : 'nothng' });
+console.log( res.message) //"status does not contains 'in'"</code></pre>
+						</section>
+            <section class="docs-section" id="contains-any">
+              <h2 class="section-heading">Contains Any</h2>
+              <p>To verify given input value contains any text from given value or array</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validate = parser({ status: 'contains_any:in,not' })
+
+var res = validate({ status : 'note' });
+console.log( res.message) //"validation passed"
+
+var res = validate({ status : 'betweenvalue' });
+console.log( res.message) //"status does not contains any of in,not"</code></pre>
 						</section>
           </article>
 
@@ -659,7 +782,7 @@ console.log( res.message) //"status does not ends with inactive,delete"</code></
         </div>
       </div>
     </div>
-    <script src="./assets/js/prism.js"></script>
+    <script src="./assets/prism.js"></script>
     <script src="./assets/js/smoothscroll.min.js"></script>
     <script src="./assets/js/docs.js"></script> 
   </body>
