@@ -242,8 +242,10 @@ console.log( res.message) //"id is required"</code></pre>
             <section class="docs-section" id="required-if">
               <h2 class="section-heading">Required If</h2>
               <p>If variable is required depends on value of other variable, at that time this validation can be used</p>
+              <p style="color:red">*Note: only works with string and integer value comparision of other variable</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ due_date: 'required_if:status,active' })
+<code class="language-javascript">// here status is other variable and if status is active then due_date is required
+var validate = parser({ due_date: 'required_if:status,active' })
 
 var res = validate({ due_date: null });
 console.log( res.message) //"validation passed"
