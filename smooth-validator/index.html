@@ -9,8 +9,8 @@
     <meta name="description" content="Smooth Validator">
     <meta name="author" content="Bhagyesh Sunil Patel">
     <!-- FontAwesome JS-->
-    <script defer src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <!-- Theme CSS -->  
+    <script defer src="./assets/js/frontawesome.js"></script>
+    <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="./assets/css/theme.css">
     <link rel="stylesheet" href="./assets/prism.css">
   </head>
@@ -77,6 +77,12 @@
 						</li>
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#required-if">Required If</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#array">Array</a>
+						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#object">Object</a>
 						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#integer">
@@ -197,25 +203,57 @@
             <header class="docs-header">
               <h1 class="docs-heading">Introduction</h1>
               <section class="docs-intro">
-                <p>This is smooth-validator for Javascript frontend and backend. easy to use in any kind of data validation.</p>
+                <p>Smooth Validator offers many pre-defined validation helpers that you can use directly inside your javascript (plain, frontend or backedn). These helpers provide common validation rules. Every time a validation fails, an error is added to the object's errors collection, and this is associated with the attribute being validated.
+                  <br><br>
+                  Each helper accepts an arbitrary number of attribute names, so with a single line of code you can add the same kind of validation to several attributes.</p>
               </section>
             </header>
             <section class="docs-section" id="installation">
               <h2 class="section-heading">Installation</h2>
-              <p>We can easily downlaod and install latest version 3.0.0 via npm. </p>
+              <p>We can easily downlaod and install latest version 4.0.0 via npm.</p>
               <p>Command: <code>npm install smooth-validator</code></p>
             </section>
             <!--//section-->
             <section class="docs-section" id="example">
               <h2 class="section-heading">Example</h2>
-              <p>Here is example how we can use validation for Registration API.</p>
+              <p>Here is example how we can use validation for Registration API.
+                We assigned couple of rules to signup user object
+                 and passed it to parser method,<br>
+                it returns a method will call it validator, 
+                 now whenever we want to verify data we need to pass it
+                 to the validator method
+              </p>
               <!--//docs-intro-->
-              <h5>Github Code Example:</h5>
-              <div class="docs-code-block">
-                <!-- ** Embed github code starts ** -->
-                <script src="https://gist.github.com/uzrnem/b8e64bb6ad6aac0765e5d5f1ee732ba5.js"></script>
-                <!-- ** Embed github code ends ** -->
-              </div>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0"><code class="language-javascript">const parser = require("smooth-validator");
+//Sample signup validation
+var validator = parser({
+  email : 'required|email|min:5|max:100',
+  password: 'required|min:6|max:30',
+  confirm_password: 'required|same:password'
+}) //parser returns validator, which can be used on data object
+
+var data = {
+  email: 'gisueinc@gmail.com',
+  password: 'strong',
+  confirm_password: 'strong'
+}
+console.log(validator(data))
+//OUTPUT: { message: 'validation passed', errors: [] }
+
+data = {
+  email: 'gisueinc@gmail.com',
+  password: 'same',
+  confirm_password: 'notsame'
+}
+console.log(validator(data))
+/* OUTPUT: validation failed
+{
+  message: "password's length is less than 6",
+  errors: [
+    { key: 'password', message: "password's length is less than 6" },
+    { key: 'confirm_password', message: 'confirm_password is not equal to password' }
+  ]
+} */</code></pre>
             </section>
             <!--//section-->
           </article>
@@ -229,15 +267,31 @@
             </header>
             <section class="docs-section" id="required">
               <h2 class="section-heading">Required</h2>
-              <p>This is useful when you dont want user to allow empty value</p>
+              <h4>Applicable for Boolean, String, Integer and Date</h4>
+              <p>This validates that the value is not the data types default zero value. For numbers ensures value is not zero. For strings ensures value is not "". For array, object, date value is not nil or empty.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'required' })
+<code class="language-javascript">var validator = parser({ id: 'required' })
 
-var res = validate({ id : -24.6778 });
-console.log( res.message) //"validation passed"
+var res = validator({ id: -24.6778 });
+console.log( res.message) //validation passed
 
-var res = validate({});
-console.log( res.message) //"id is required"</code></pre>
+var res = validator({});
+console.log( res.message) //id is required</code></pre>
+              <h4 style="margin-top: 1rem;">Applicable for Array and Object</h4>
+              <p>Use * (atrick) before name to ensures value is not empty.</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validator = parser({
+  '*address': {
+    '*near': ["max:12|uppercase"],
+  }
+})
+
+var res = validator({
+  address: {
+    near: ["BSECTOR", "DSECTOR"],
+  }
+});
+console.log( res.message) //validation passed</code></pre>
 						</section>
             <section class="docs-section" id="required-if">
               <h2 class="section-heading">Required If</h2>
@@ -245,32 +299,66 @@ console.log( res.message) //"id is required"</code></pre>
               <p style="color:red">*Note: only works with string and integer value comparision of other variable</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">// here status is other variable and if status is active then due_date is required
-var validate = parser({ due_date: 'required_if:status,active' })
+var validator = parser({ due_date: 'required_if:status,active' })
 
-var res = validate({ due_date: null });
-console.log( res.message) //"validation passed"
+var res = validator({ due_date: null, status: 'inactive' });
+console.log( res.message) //validation passed
 
-var res = validate({ due_date: null, status: 'inactive' });
-console.log( res.message) //"validation passed"
-
-var res = validate({ due_date: new Date(), status: 'active' })
-console.log( res.message) //"validation passed"
-
-var res = validate({ due_date: null, status: 'active' })
-console.log( res.message) //"due_date is required"</code></pre>
+var res = validator({ due_date: null, status: 'active' })
+console.log( res.message) //due_date is required</code></pre>
 						</section>
             <!--//section-->
             <section class="docs-section" id="same">
               <h2 class="section-heading">Same</h2>
               <p>If you want to variables to have same value you can use `same` (like confirm_passowrd).</p>
+              <p style="color:red">*Note: does not works with array or object</p>              
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ confirm_passowrd: 'same:password' })
+<code class="language-javascript">var validator = parser({ confirm_passowrd: 'same:password' })
 
-var res = validate({ password : 'strong', confirm_passowrd: 'strong' });
-console.log( res.message) //"validation passed"
+var res = validator({ password : 'strong', confirm_passowrd: 'strong' });
+console.log( res.message) //validation passed
 
-var res = validate({ password : 'strong', confirm_passowrd: 'week' });
-console.log( res.message) //"confirm_passowrd is not equal to password"</code></pre>
+var res = validator({ password : 'strong', confirm_passowrd: 'week' });
+console.log( res.message) //confirm_passowrd is not equal to password</code></pre>
+            </section>
+            <!--//section-->
+            <section class="docs-section" id="array">
+              <h2 class="section-heading">Array</h2>
+              <p>This tells the validator to get into a array and validate its items. Multidimensional nesting is also supported.</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validator = parser({ '*emailTo': ["email"] })
+
+var res = validator({ emailTo: ["bsp@gmail.com"] });
+
+console.log( res.message) //validation passed</code></pre>
+            </section>
+            <section class="docs-section" id="array">
+              <h2 class="section-heading">Object</h2>
+              <p>If you want to validate items in Object, use this.</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validator = parser({
+  {
+    name: 'required'
+    'address': {
+      'colony': "required",
+      'city': "required",
+      'pincode': "required",
+    }
+  }
+})
+
+var res = validator({
+  {
+    name: 'bhagyesh',
+    address: {
+      colony: "b-sector",
+      city: "pune",
+      pincode: 412115
+    }
+  }
+});
+
+console.log( res.message) //validation passed</code></pre>
             </section>
           </article>
           <article class="docs-article" id="integer">
@@ -283,111 +371,99 @@ console.log( res.message) //"confirm_passowrd is not equal to password"</code></
             </header>
             <section class="docs-section" id="numeric">
               <h2 class="section-heading">Numeric</h2>
-              <p>To verify given input in numeric</p>
+              <p>This validates that a string value contains a basic numeric value. for integers or float it returns true.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'numeric' })
+<code class="language-javascript">var validator = parser({ num: 'numeric' })
 
-var res = validate({ id : '-24.6778' });
-console.log( res.message) //"validation passed"
+var res = validator({ num: '-24.6778' });
+console.log( res.message) //validation passed
 
-var res = validate({ id : '-24. 6778'});
-console.log( res.message) //"id is not number"</code></pre>
+var res = validator({ num: '-24. 6778'});
+console.log( res.message) //num is not number</code></pre>
 						</section>
             <section class="docs-section" id="between">
               <h2 class="section-heading">Between</h2>
-              <p>Set a range for input integer.</p>
+              <p>The field under validation must have a size between the given min and max.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'between:10,30' })
+<code class="language-javascript">var validator = parser({ num: 'between:10,30' })
 
-var res = validate({ id : 10 });
-console.log( res.message) //"validation passed"
+var res = validator({ num: 10 });
+console.log( res.message) //validation passed
 
-var res = validate({ id : 9 });
-console.log( res.message) //"id should be greater than 10 and less than 30"</code></pre>
+var res = validator({ num: 9 });
+console.log( res.message) //num should be greater than 10 and less than 30</code></pre>
             </section>
             <section class="docs-section" id="gt">
               <h2 class="section-heading">Greater Than</h2>
-              <p>Confirm that given input is greater than set value or variable.</p>
+              <p>This will ensure that the value is greater than the parameter given.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'gt:marks' })
-var res = validate({ id : 10.1, marks: 10 });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ num: 'gt:marks' })
+var res = validator({ num: 10.1, marks: 10 });
+console.log( res.message) //validation passed
 
-var validate = parser({ id: 'gt:10' })
-var res = validate({ id : 10 });
-console.log( res.message) //"id should be greater than 10"</code></pre>
+var validator = parser({ num: 'gt:10' })
+var res = validator({ num: 10 });
+console.log( res.message) //num should be greater than 10</code></pre>
             </section>
             <section class="docs-section" id="gte">
               <h2 class="section-heading">Greater Than / Equals</h2>
-              <p>Confirm that given input is greater than or equals to set value or variable.</p>
+              <p>This will ensure that the value is greater than or equals to the parameter given.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'gte:10' })
-var res = validate({ id : 10 });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ num: 'gte:10' })
+var res = validator({ num: 10 });
+console.log( res.message) //validation passed
 
-var validate = parser({ id: 'gte:marks' })
-var res = validate({ id : 9, marks: 10 });
-console.log( res.message) //"id should be greater than or equals to marks"</code></pre>
+var validator = parser({ num: 'gte:marks' })
+var res = validator({ num: 9, marks: 10 });
+console.log( res.message) //num should be greater than or equals to marks</code></pre>
             </section>
             <section class="docs-section" id="lt">
               <h2 class="section-heading">Less Than</h2>
-              <p>Confirm that given input is less than set value or variable.</p>
+              <p>This will ensure that the value is less than the parameter given.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'lt:marks' })
-var res = validate({ id : 9.1, marks: 10 });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ num: 'lt:marks' })
+var res = validator({ num: 9.1, marks: 10 });
+console.log( res.message) //validation passed
 
-var validate = parser({ id: 'lt:10' })
-var res = validate({ id : 10 });
-console.log( res.message) //"id should be less than 10"</code></pre>
+var validator = parser({ num: 'lt:10' })
+var res = validator({ num: 10 });
+console.log( res.message) //num should be less than 10</code></pre>
             </section>
             <section class="docs-section" id="lte">
               <h2 class="section-heading">Less Than / Equals</h2>
-              <p>Confirm that given input is greater than or equals to set value or variable.</p>
+              <p>This will ensure that the value is less than or equals to the parameter given.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'lte:10' })
-var res = validate({ id : 10 });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ num: 'lte:10' })
+var res = validator({ num: 10 });
+console.log( res.message) //validation passed
 
-var validate = parser({ id: 'lte:marks' })
-var res = validate({ id : 10.1, marks: 10 });
-console.log( res.message) //"id should be less than or equals to marks"</code></pre>
+var validator = parser({ num: 'lte:marks' })
+var res = validator({ num: 10.1, marks: 10 });
+console.log( res.message) //num should be less than or equals to marks</code></pre>
             </section>
             <section class="docs-section" id="odd">
               <h2 class="section-heading">Odd</h2>
-              <p>Confirm that given input is odd number.</p>
+              <p>Specifies the value must be an odd number.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'odd' })
+<code class="language-javascript">var validator = parser({ num: 'odd' })
 
-var res = validate({ id : 9 });
-console.log( res.message) //"validation passed"
+var res = validator({ num: 9 });
+console.log( res.message) //validation passed
 
-var res = validate({ id : "21" });
-console.log( res.message) //"validation passed"
-
-var res = validate({ id : 9.1 });
-console.log( res.message) //"id is not odd number"
-
-var res = validate({ id : 30 });
-console.log( res.message) //"id is not odd number"</code></pre>
+var res = validator({ num: 30 });
+console.log( res.message) //num is not odd number</code></pre>
             </section>
             <section class="docs-section" id="even">
               <h2 class="section-heading">Even</h2>
-              <p>Confirm that given input is even number.</p>
+              <p>Specifies the value must be an even number.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'even' })
+<code class="language-javascript">var validator = parser({ num: 'even' })
 
-var res = validate({ id : 8 });
-console.log( res.message) //"validation passed"
+var res = validator({ num: 8 });
+console.log( res.message) //validation passed
 
-var res = validate({ id : "20" });
-console.log( res.message) //"validation passed"
-
-var res = validate({ id : 8.1 });
-console.log( res.message) //"id is not even number"
-
-var res = validate({ id : 31 });
-console.log( res.message) //"id is not even number"</code></pre>
+var res = validator({ num: 31 });
+console.log( res.message) //num is not even number</code></pre>
             </section>
           </article>
           <article class="docs-article" id="boolean">
@@ -398,18 +474,18 @@ console.log( res.message) //"id is not even number"</code></pre>
             <section class="docs-section">
               <p>Check that given input is boolean</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ id: 'boolean' })
+<code class="language-javascript">var validator = parser({ is_active: 'boolean' })
 
-var res = validate({ id : 'false' });
-console.log( res.message) //"validation passed"
+var res = validator({ is_active: 'false' });
+console.log( res.message) //validation passed
 
-var res = validate({id: 'fdalse'});
-console.log( res.message) //"id is not boolean"</code></pre>
+var res = validator({is_active: 'fdalse'});
+console.log( res.message) //is_active is not boolean</code></pre>
             </section>
           </article>
           <article class="docs-article" id="date">
             <header class="docs-header">
-              <h1 class="docs-heading">date</h1>
+              <h1 class="docs-heading">Date</h1>
               <section class="docs-intro">
                 <p>Various validation for date data types</p>
               </section>
@@ -419,137 +495,137 @@ console.log( res.message) //"id is not boolean"</code></pre>
               <h2 class="section-heading">Date</h2>
               <p>Check that given input is date</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ datecolumn: 'date' })
+<code class="language-javascript">var validator = parser({ datecolumn: 'date' })
 
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var res = validate({ datecolumn : 'dmsk' });
-console.log( res.message) //"datecolumn is not in date format"</code></pre>
+var res = validator({ datecolumn : 'dmsk' });
+console.log( res.message) //datecolumn is not in date format</code></pre>
 						</section>
             <section class="docs-section" id="after">
               <h2 class="section-heading">After</h2>
-              <p>Check that given input date is after specific date</p>
+              <p>The field under validation must be a value after a given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ datecolumn: 'after:yesterday' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ datecolumn: 'after:yesterday' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after:created_at' })
-var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'after:created_at' })
+var res = validator({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after:2022-05-14' })
-var res = validate({ datecolumn : '2022-05-15' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'after:2022-05-14' })
+var res = validator({ datecolumn : '2022-05-15' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after:tomorrow' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"datecolumn is not after tomorrow"
+var validator = parser({ datecolumn: 'after:tomorrow' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //datecolumn is not after tomorrow
 
-var validate = parser({ datecolumn: 'after:2022-09-10' })
-var res = validate({ datecolumn : '2022-09-10' });
-console.log( res.message) //"datecolumn is not after 2022-09-10"
+var validator = parser({ datecolumn: 'after:2022-09-10' })
+var res = validator({ datecolumn : '2022-09-10' });
+console.log( res.message) //datecolumn is not after 2022-09-10
 
-var validate = parser({ datecolumn: 'after:created_at' })
-var res = validate({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
-console.log( res.message) //"datecolumn is not after created_at"</code></pre>
+var validator = parser({ datecolumn: 'after:created_at' })
+var res = validator({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
+console.log( res.message) //datecolumn is not after created_at</code></pre>
 						</section>
             <section class="docs-section" id="after-or-equals">
               <h2 class="section-heading">After or Equals</h2>
-              <p>Check that given input date is after or equals to specific date</p>
+              <p>The field under validation must be a value after or equal to the given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ datecolumn: 'after_or_equals:yesterday' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ datecolumn: 'after_or_equals:yesterday' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after_or_equals:today' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'after_or_equals:today' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after_or_equals:created_at' })
-var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
-console.log( res.message) //"validation passed"
-var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-15' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'after_or_equals:created_at' })
+var res = validator({ datecolumn : '2022-05-15', created_at: '2022-05-14' });
+console.log( res.message) //validation passed"
+var res = validator({ datecolumn : '2022-05-15', created_at: '2022-05-15' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after_or_equals:2022-05-14' })
-var res = validate({ datecolumn : '2022-05-15' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'after_or_equals:2022-05-14' })
+var res = validator({ datecolumn : '2022-05-15' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'after_or_equals:tomorrow' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"datecolumn is not after or equals to tomorrow"
+var validator = parser({ datecolumn: 'after_or_equals:tomorrow' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //datecolumn is not after or equals to tomorrow
 
-var validate = parser({ datecolumn: 'after_or_equals:2022-09-10' })
-var res = validate({ datecolumn : '2022-09-09' });
-console.log( res.message) //"datecolumn is not after or equals to 2022-09-10"
+var validator = parser({ datecolumn: 'after_or_equals:2022-09-10' })
+var res = validator({ datecolumn : '2022-09-09' });
+console.log( res.message) //datecolumn is not after or equals to 2022-09-10
 
-var validate = parser({ datecolumn: 'after_or_equals:created_at' })
-var res = validate({ datecolumn : '2022-09-09', created_at: '2022-09-10' });
-console.log( res.message) //"datecolumn is not after or equals to created_at"</code></pre>
+var validator = parser({ datecolumn: 'after_or_equals:created_at' })
+var res = validator({ datecolumn : '2022-09-09', created_at: '2022-09-10' });
+console.log( res.message) //datecolumn is not after or equals to created_at</code></pre>
 						</section>
             <section class="docs-section" id="before">
               <h2 class="section-heading">Before</h2>
-              <p>Check that given input date is before specific date</p>
+              <p>The field under validation must be a value before a given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ datecolumn: 'before:tomorrow' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ datecolumn: 'before:tomorrow' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before:created_at' })
-var res = validate({ datecolumn : '2022-05-15', created_at: '2022-05-16' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'before:created_at' })
+var res = validator({ datecolumn : '2022-05-15', created_at: '2022-05-16' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before:2022-05-14' })
-var res = validate({ datecolumn : '2022-05-13' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'before:2022-05-14' })
+var res = validator({ datecolumn : '2022-05-13' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before:yesterday' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"datecolumn is not before yesterday"
+var validator = parser({ datecolumn: 'before:yesterday' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //datecolumn is not before yesterday
 
-var validate = parser({ datecolumn: 'before:2022-09-10' })
-var res = validate({ datecolumn : '2022-09-10' });
-console.log( res.message) //"datecolumn is not before 2022-09-10"
+var validator = parser({ datecolumn: 'before:2022-09-10' })
+var res = validator({ datecolumn : '2022-09-10' });
+console.log( res.message) //datecolumn is not before 2022-09-10
 
-var validate = parser({ datecolumn: 'before:created_at' })
-var res = validate({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
-console.log( res.message) //"datecolumn is not before created_at"</code></pre>
+var validator = parser({ datecolumn: 'before:created_at' })
+var res = validator({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
+console.log( res.message) //datecolumn is not before created_at</code></pre>
 						</section>
             <section class="docs-section" id="before-or-equals">
               <h2 class="section-heading">Before or Equals</h2>
-              <p>Check that given input date is before or equals to specific date</p>
+              <p>The field under validation must be a value before or equal to the given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ datecolumn: 'before_or_equals:tomorrow' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ datecolumn: 'before_or_equals:tomorrow' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before_or_equals:today' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'before_or_equals:today' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before_or_equals:created_at' })
-var res = validate({ datecolumn : '2022-05-14', created_at: '2022-05-14' });
-console.log( res.message) //"validation passed"
-var res = validate({ datecolumn : '2022-05-14', created_at: '2022-05-15' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'before_or_equals:created_at' })
+var res = validator({ datecolumn : '2022-05-14', created_at: '2022-05-14' });
+console.log( res.message) //validation passed"
+var res = validator({ datecolumn : '2022-05-14', created_at: '2022-05-15' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before_or_equals:2022-05-16' })
-var res = validate({ datecolumn : '2022-05-15' });
-console.log( res.message) //"validation passed"
+var validator = parser({ datecolumn: 'before_or_equals:2022-05-16' })
+var res = validator({ datecolumn : '2022-05-15' });
+console.log( res.message) //validation passed
 
-var validate = parser({ datecolumn: 'before_or_equals:yesterday' })
-var res = validate({ datecolumn : new Date() });
-console.log( res.message) //"datecolumn is not before or equals to yesterday"
+var validator = parser({ datecolumn: 'before_or_equals:yesterday' })
+var res = validator({ datecolumn : new Date() });
+console.log( res.message) //datecolumn is not before or equals to yesterday
 
-var validate = parser({ datecolumn: 'before_or_equals:2022-09-10' })
-var res = validate({ datecolumn : '2022-09-11' });
-console.log( res.message) //"datecolumn is not before or equals to 2022-09-10"
+var validator = parser({ datecolumn: 'before_or_equals:2022-09-10' })
+var res = validator({ datecolumn : '2022-09-11' });
+console.log( res.message) //datecolumn is not before or equals to 2022-09-10
 
-var validate = parser({ datecolumn: 'before_or_equals:created_at' })
-var res = validate({ datecolumn : '2022-09-11', created_at: '2022-09-10' });
-console.log( res.message) //"datecolumn is not before or equals to created_at"</code></pre>
+var validator = parser({ datecolumn: 'before_or_equals:created_at' })
+var res = validator({ datecolumn : '2022-09-11', created_at: '2022-09-10' });
+console.log( res.message) //datecolumn is not before or equals to created_at</code></pre>
 						</section>
           </article>
           <article class="docs-article" id="string">
@@ -562,211 +638,211 @@ console.log( res.message) //"datecolumn is not before or equals to created_at"</
             </header>
             <section class="docs-section" id="min">
               <h2 class="section-heading">Min</h2>
-              <p>To verify given input has minimum length</p>
+              <p>For strings, it checks that the string length is at least that number of characters.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ password: 'min:6' })
-var res = validate({ password : 'passing' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ password: 'min:6' })
+var res = validator({ password : 'passing' });
+console.log( res.message) //validation passed
 
-var validate = parser({ password: 'min:8' })
-var res = validate({password : 'passing'});
-console.log( res.message) //"password's length is less than 8"</code></pre>
+var validator = parser({ password: 'min:8' })
+var res = validator({password : 'passing'});
+console.log( res.message) //password's length is less than 8</code></pre>
 						</section>
             <section class="docs-section" id="max">
               <h2 class="section-heading">Max</h2>
-              <p>To verify given input has maximum length</p>
+              <p>For strings, it checks that the string length is at most that number of characters.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ password: 'max:8' })
-var res = validate({ password : 'passing' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ password: 'max:8' })
+var res = validator({ password : 'passing' });
+console.log( res.message) //validation passed
 
-var validate = parser({ password: 'max:6' })
-var res = validate({password : 'passing'});
-console.log( res.message) //"password's length is greater than 6"</code></pre>
+var validator = parser({ password: 'max:6' })
+var res = validator({password : 'passing'});
+console.log( res.message) //password's length is greater than 6</code></pre>
 						</section>
             <section class="docs-section" id="size">
               <h2 class="section-heading">Size</h2>
-              <p>To verify given input has specific length</p>
+              <p>For strings, it checks that the string length is exactly that number of characters. For slices, arrays, and maps, validates the number of items.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ password: 'size:7' })
-var res = validate({ password : 'passing' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ password: 'size:7' })
+var res = validator({ password : 'passing' });
+console.log( res.message) //validation passed
 
-var validate = parser({ password: 'size:6' })
-var res = validate({password : 'passing'});
-console.log( res.message) //"password's length not equal to 6"</code></pre>
+var validator = parser({ password: 'size:6' })
+var res = validator({password : 'passing'});
+console.log( res.message) //password's length not equal to 6</code></pre>
 						</section>
             <section class="docs-section" id="in">
               <h2 class="section-heading">In</h2>
-              <p>To verify given input value is belongs to specific array</p>
+              <p>For strings, `in` will ensure that the value is one of the values in the parameter. The parameter should be a list of values separated by comma `,`. Values must be strings.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ password: 'in:passing,failing' })
+<code class="language-javascript">var validator = parser({ password: 'in:passing,failing' })
 
-var res = validate({ password : 'passing' });
-console.log( res.message) //"validation passed"
+var res = validator({ password : 'passing' });
+console.log( res.message) //validation passed
 
-var res = validate({password : 'pass'});
-console.log( res.message) //"password's value is not in array"</code></pre>
+var res = validator({password : 'pass'});
+console.log( res.message) //password's value is not in array</code></pre>
 						</section>
             <section class="docs-section" id="not-in">
               <h2 class="section-heading">Not In</h2>
-              <p>To verify given input value is not belongs to specific array</p>
+              <p>For strings, `not_in` will ensure that the value is not one of the values in the parameter. The parameter should be a list of values separated by comma `,`. Values must be strings.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'not_in:inactive,delete' })
+<code class="language-javascript">var validator = parser({ status: 'not_in:inactive,delete' })
 
-var res = validate({ status : 'active' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'active' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'inactive' });
-console.log( res.message) //"status's value is in invalid array"</code></pre>
+var res = validator({ status : 'inactive' });
+console.log( res.message) //status's value is in invalid array</code></pre>
 						</section>
             <section class="docs-section" id="email">
               <h2 class="section-heading">Email</h2>
-              <p>To verify given input value is email</p>
+              <p>This validates that a string value contains a valid email.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ email: 'email' })
+<code class="language-javascript">var validator = parser({ email: 'email' })
 
-var res = validate({ email : 'gisueinc@gmail.com' });
-console.log( res.message) //"validation passed"
+var res = validator({ email : 'gisueinc@gmail.com' });
+console.log( res.message) //validation passed
 
-var res = validate({ email : 'dmsk' });
-console.log( res.message) //"email is invalid"</code></pre>
+var res = validator({ email : 'dmsk' });
+console.log( res.message) //email is invalid</code></pre>
 						</section>
             <section class="docs-section" id="alpha">
               <h2 class="section-heading">Alphabetic</h2>
-              <p>To verify given input value is alphabetic</p>
+              <p>This validates that a string value contains ASCII alpha characters only, as well as dashes, spaces and underscores.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ name: 'alpha' })
-var res = validate({ name : 'bhagyesh' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ name: 'alpha' })
+var res = validator({ name : 'bhagyesh' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'alpha:dash,space,underscope' })
-var res = validate({ name : 'bhagy _e-sh' });
-console.log( res.message) //"validation passed"
+var validator = parser({ name: 'alpha:dash,space,underscope' })
+var res = validator({ name : 'bhagy _e-sh' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'alpha' })
-var res = validate({ name : 'bhagy _e-sh10' });
-console.log( res.message) //"name does not match alpha"</code></pre>
+var validator = parser({ name: 'alpha' })
+var res = validator({ name : 'bhagy _e-sh10' });
+console.log( res.message) //name does not match alpha</code></pre>
 						</section>
             <section class="docs-section" id="alphanumeric">
               <h2 class="section-heading">Alpha-Numeric</h2>
-              <p>To verify given input value is alphanumeric</p>
+              <p>The field under validation must be entirely alpha-numeric characters., as well as dashes, spaces and underscores.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ name: 'alphanumeric' })
-var res = validate({ name : 'bhagyesh10' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ name: 'alphanumeric' })
+var res = validator({ name : 'bhagyesh10' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'alphanumeric:space,dash,underscope' })
-var res = validate({ name : 'bhagy _e-sh10' });
-console.log( res.message) //"validation passed"
+var validator = parser({ name: 'alphanumeric:space,dash,underscope' })
+var res = validator({ name : 'bhagy _e-sh10' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'alphanumeric' })
-var res = validate({ name : 'bhagy _e-sh@10' });
-console.log( res.message) //"name does not match alphanumeric"</code></pre>
+var validator = parser({ name: 'alphanumeric' })
+var res = validator({ name : 'bhagy _e-sh@10' });
+console.log( res.message) //name does not match alphanumeric</code></pre>
 						</section>
             <section class="docs-section" id="uppercase">
               <h2 class="section-heading">Uppercase</h2>
-              <p>To verify given input value is Uppercase</p>
+              <p>The field under validation must be entirely uppercase characters, as well as dashes, spaces and underscores.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ name: 'uppercase' })
-var res = validate({ name : 'BHAGYESH' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ name: 'uppercase' })
+var res = validator({ name : 'BHAGYESH' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'uppercase:dash,underscope,space' })
-var res = validate({ name : 'BHAGY _E-SH' });
-console.log( res.message) //"validation passed"
+var validator = parser({ name: 'uppercase:dash,underscope,space' })
+var res = validator({ name : 'BHAGY _E-SH' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'uppercase' })
-var res = validate({ name : 'bhagy ESH' });
-console.log( res.message) //"name does not match uppercase"</code></pre>
+var validator = parser({ name: 'uppercase' })
+var res = validator({ name : 'bhagy ESH' });
+console.log( res.message) //name does not match uppercase</code></pre>
 						</section>
             <section class="docs-section" id="lowercase">
               <h2 class="section-heading">Lowercase</h2>
-              <p>To verify given input value is Lowercase</p>
+              <p>The field under validation must be entirely uppercase characters, as well as dashes, spaces and underscores.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ name: 'lowercase' })
-var res = validate({ name : 'bhagyesh' });
-console.log( res.message) //"validation passed"
+<code class="language-javascript">var validator = parser({ name: 'lowercase' })
+var res = validator({ name : 'bhagyesh' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'lowercase:dash,underscope,space' })
-var res = validate({ name : 'bhagy _e-sh' });
-console.log( res.message) //"validation passed"
+var validator = parser({ name: 'lowercase:dash,underscope,space' })
+var res = validator({ name : 'bhagy _e-sh' });
+console.log( res.message) //validation passed
 
-var validate = parser({ name: 'lowercase' })
-var res = validate({ name : 'bhagy _e-sh10' });
-console.log( res.message) //"name does not match lowercase"</code></pre>
+var validator = parser({ name: 'lowercase' })
+var res = validator({ name : 'bhagy _e-sh10' });
+console.log( res.message) //name does not match lowercase</code></pre>
 						</section>
             <section class="docs-section" id="starts-with">
               <h2 class="section-heading">Starts With</h2>
-              <p>To verify given input value starts with text from given array</p>
+              <p>This validates that a string value starts with the supplied string value.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'starts_with:inactive,delete' })
+<code class="language-javascript">var validator = parser({ status: 'starts_with:inactive,delete' })
 
-var res = validate({ status : 'inactive-world' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'inactive-world' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'active' });
-console.log( res.message) //"status does not starts with inactive,delete"</code></pre>
+var res = validator({ status : 'active' });
+console.log( res.message) //status does not starts with inactive,delete</code></pre>
 						</section>
             <section class="docs-section" id="starts-not-with">
               <h2 class="section-heading">Starts Not With</h2>
-              <p>To verify given input value does not starts with text from given array</p>
+              <p>This validates that a string value does not starts with the supplied string value.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'starts_not_with:inactive,delete' })
+<code class="language-javascript">var validator = parser({ status: 'starts_not_with:inactive,delete' })
 
-var res = validate({ status : 'active' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'active' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'delete' });
-console.log( res.message) //"status does starts with delete"</code></pre>
+var res = validator({ status : 'delete' });
+console.log( res.message) //status does starts with delete</code></pre>
 						</section>
             <section class="docs-section" id="ends-with">
               <h2 class="section-heading">Ends With</h2>
-              <p>To verify given input value ends with text from given array</p>
+              <p>This validates that a string value ends with the supplied string value.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'ends_with:inactive,delete' })
+<code class="language-javascript">var validator = parser({ status: 'ends_with:inactive,delete' })
 
-var res = validate({ status : 'all-delete' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'all-delete' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'all' });
-console.log( res.message) //"status does not ends with inactive,delete"</code></pre>
+var res = validator({ status : 'all' });
+console.log( res.message) //status does not ends with inactive,delete</code></pre>
 						</section>
             <section class="docs-section" id="ends-not-with">
               <h2 class="section-heading">Ends Not With</h2>
-              <p>To verify given input value does not ends with text from given array</p>
+              <p>This validates that a string value does not ends with the supplied string value.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'ends_not_with:inactive,delete' })
+<code class="language-javascript">var validator = parser({ status: 'ends_not_with:inactive,delete' })
 
-var res = validate({ status : 'status-active' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'status-active' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'isdelete' });
-console.log( res.message) //"status does ends with 'delete'"</code></pre>
+var res = validator({ status : 'isdelete' });
+console.log( res.message) //status does ends with 'delete'</code></pre>
 						</section>
             <section class="docs-section" id="contains">
               <h2 class="section-heading">Contains</h2>
-              <p>To verify given input value contains all text from given value or array</p>
+              <p>This validates that a string value contains the substring value, multiple values can be provided.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'contains:in,not' })
+<code class="language-javascript">var validator = parser({ status: 'contains:in,not' })
 
-var res = validate({ status : 'inot' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'inot' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'nothng' });
-console.log( res.message) //"status does not contains 'in'"</code></pre>
+var res = validator({ status : 'nothng' });
+console.log( res.message) //status does not contains 'in'</code></pre>
 						</section>
             <section class="docs-section" id="contains-any">
               <h2 class="section-heading">Contains Any</h2>
-              <p>To verify given input value contains any text from given value or array</p>
+              <p>This validates that a string value contains any in the substring value, multiple values can be provided.</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validate = parser({ status: 'contains_any:in,not' })
+<code class="language-javascript">var validator = parser({ status: 'contains_any:in,not' })
 
-var res = validate({ status : 'note' });
-console.log( res.message) //"validation passed"
+var res = validator({ status : 'note' });
+console.log( res.message) //validation passed
 
-var res = validate({ status : 'betweenvalue' });
-console.log( res.message) //"status does not contains any of in,not"</code></pre>
+var res = validator({ status : 'betweenvalue' });
+console.log( res.message) //status does not contains any of in,not</code></pre>
 						</section>
           </article>
 
