@@ -2,16 +2,14 @@
 <html lang="en">
   <head>
     <title>Smooth Validator</title>
-    <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Smooth Validator">
     <meta name="author" content="Bhagyesh Sunil Patel">
-    <!-- FontAwesome JS-->
     <script defer src="./assets/js/frontawesome.js"></script>
-    <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="./assets/css/theme.css">
+    <link id="theme-style" rel="stylesheet" href="./assets/css/custom.css">
     <link rel="stylesheet" href="./assets/prism.css">
   </head>
   <body class="docs-page" class="line-numbers">
@@ -30,23 +28,17 @@
               </a>
             </div>
           </div>
-          <!--//docs-logo-wrapper-->
           <div class="docs-top-utilities d-flex justify-content-end align-items-center">
             <ul class="social-list list-inline mx-md-3 mx-lg-5 mb-0 d-none d-lg-flex">
 							<li class="list-inline-item"><a href="https://github.com/uzrnem/smooth-validator"><i class="fab fa-github fa-fw"></i></a></li>
 							<li class="list-inline-item"><a href="https://www.npmjs.com/package/smooth-validator"><i class="fab fa-npm fa-fw"></i></a></li>
               <li class="list-inline-item"><a href="https://www.linkedin.com/in/uzrnem/"><i class="fab fa-linkedin fa-fw"></i></a></li>
             </ul>
-            <!--//social-list-->
             <a href="https://github.com/uzrnem/smooth-validator" class="btn btn-primary d-none d-lg-flex">Download</a>
           </div>
-          <!--//docs-top-utilities-->
         </div>
-        <!--//container-->
       </div>
-      <!--//branding-->
     </header>
-    <!--//header-->
     <div class="docs-wrapper">
       <div id="docs-sidebar" class="docs-sidebar">
         <nav id="docs-nav" class="docs-nav navbar">
@@ -63,6 +55,9 @@
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#example">Example</a>
 						</li>
+            <li class="nav-item">
+							<a class="nav-link scrollto" href="#message">Custom Message</a>
+						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#general">
 								<span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>
@@ -77,12 +72,6 @@
 						</li>
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#required-if">Required If</a>
-						</li>
-            <li class="nav-item">
-							<a class="nav-link scrollto" href="#array">Array</a>
-						</li>
-            <li class="nav-item">
-							<a class="nav-link scrollto" href="#object">Object</a>
 						</li>
             <li class="nav-item section-title mt-3">
 							<a class="nav-link scrollto" href="#integer">
@@ -192,11 +181,21 @@
             <li class="nav-item">
 							<a class="nav-link scrollto" href="#contains-any">Contains Any</a>
 						</li>
+            <li class="nav-item section-title mt-3">
+							<a class="nav-link scrollto" href="#array">
+								<span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>
+								Array
+							</a>
+						</li>
+            <li class="nav-item section-title mt-3">
+							<a class="nav-link scrollto" href="#object">
+								<span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>
+								Object
+							</a>
+						</li>
           </ul>
         </nav>
-        <!--//docs-nav-->
       </div>
-      <!--//docs-sidebar-->
       <div class="docs-content">
         <div class="container">
           <article class="docs-article" id="introduction">
@@ -211,9 +210,9 @@
             <section class="docs-section" id="installation">
               <h2 class="section-heading">Installation</h2>
               <p>We can easily downlaod and install latest version 4.0.0 via npm.</p>
-              <p>Command: <code>npm install smooth-validator</code></p>
+              <p>Command: 
+                <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">npm install smooth-validator</code></pre></p>
             </section>
-            <!--//section-->
             <section class="docs-section" id="example">
               <h2 class="section-heading">Example</h2>
               <p>Here is example how we can use validation for Registration API.
@@ -223,14 +222,14 @@
                  now whenever we want to verify data we need to pass it
                  to the validator method
               </p>
-              <!--//docs-intro-->
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0"><code class="language-javascript">const parser = require("smooth-validator");
 //Sample signup validation
-var validator = parser({
+var rules = {
   email : 'required|email|min:5|max:100',
   password: 'required|min:6|max:30',
   confirm_password: 'required|same:password'
-}) //parser returns validator, which can be used on data object
+}
+var validator = parser(rules) //parser returns validator, which can be used on data object
 
 var data = {
   email: 'gisueinc@gmail.com',
@@ -238,24 +237,44 @@ var data = {
   confirm_password: 'strong'
 }
 console.log(validator(data))
-//OUTPUT: { message: 'validation passed', errors: [] }
+//OUTPUT: { message: 'validation passed', errors: [] }</code></pre>
+            </section>
+            <section class="docs-section" id="message">
+              <h2 class="section-heading">Message</h2>
+              <p>Default messages can be replace with custom messages,
+                 pass object with messages and some params can be used in message like
+                 :variable, :value, :first_value, :second_value, :index, :type. <br>
+                 In case of nested array, error at index can be found by :zero, :one, :two, :three...</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0"><code class="language-javascript">rules = {
+  '*emailTo': ["email"],
+  created_at: 'after:tomorrow'
+}
+
+var validate = parser(rules, {
+  message: {
+    'emailTo[].email': ':variable failed :type for :value at index :zero',
+    'created_at.after' : ':variable is not after :first_value'
+  }
+})
 
 data = {
-  email: 'gisueinc@gmail.com',
-  password: 'same',
-  confirm_password: 'notsame'
+  emailTo: ["gmail.com"],
+  created_at: new Date()
 }
-console.log(validator(data))
-/* OUTPUT: validation failed
+var res = validate(data);
+console.log(res.message)
+/* Output: 
 {
-  message: "password's length is less than 6",
+  message: 'emailTo failed email for gmail.com at index 0',
   errors: [
-    { key: 'password', message: "password's length is less than 6" },
-    { key: 'confirm_password', message: 'confirm_password is not equal to password' }
+    {
+      key: 'emailTo[]',
+      message: 'emailTo failed email for gmail.com at index 0'
+    },
+    { key: 'created_at', message: 'created_at is not after tomorrow' }
   ]
 } */</code></pre>
             </section>
-            <!--//section-->
           </article>
           <article class="docs-article" id="general">
             <header class="docs-header">
@@ -263,13 +282,23 @@ console.log(validator(data))
               <section class="docs-intro">
                 <p>This Validators are applicable for all kinds of data types.</p>
               </section>
-              <!--//docs-intro-->
             </header>
             <section class="docs-section" id="required">
               <h2 class="section-heading">Required</h2>
               <h4>Applicable for Boolean, String, Integer and Date</h4>
               <p>This validates that the value is not the data types default zero value. For numbers ensures value is not zero. For strings ensures value is not "". For array, object, date value is not nil or empty.</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('required', 'show')" id="required-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('required', 'hide')" id="required-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">name: 'required'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is required</code></pre>
+
+              <div id="required-example" class="hide">
+                <p class="mb-0">Example:</p>
+                <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ id: 'required' })
 
 var res = validator({ id: -24.6778 });
@@ -277,9 +306,21 @@ console.log( res.message) //validation passed
 
 var res = validator({});
 console.log( res.message) //id is required</code></pre>
+              </div>
               <h4 style="margin-top: 1rem;">Applicable for Array and Object</h4>
               <p>Use * (atrick) before name to ensures value is not empty.</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('required-arr', 'show')" id="required-arr-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('required-arr', 'hide')" id="required-arr-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">'*near': ["email"]</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is required</code></pre>
+
+              <div id="required-arr-example" class="hide">
+                <p class="mb-0">Example:</p>
+                <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({
   '*address': {
     '*near': ["max:12|uppercase"],
@@ -292,12 +333,24 @@ var res = validator({
   }
 });
 console.log( res.message) //validation passed</code></pre>
+              </div>
 						</section>
             <section class="docs-section" id="required-if">
               <h2 class="section-heading">Required If</h2>
               <p>If variable is required depends on value of other variable, at that time this validation can be used</p>
               <p style="color:red">*Note: only works with string and integer value comparision of other variable</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('required-if', 'show')" id="required-if-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('required-if', 'hide')" id="required-if-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">due_date: 'required_if:status,active'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is required</code></pre>
+
+              <div id="required-if-example" class="hide">
+                <p class="mb-0">Example:</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">// here status is other variable and if status is active then due_date is required
 var validator = parser({ due_date: 'required_if:status,active' })
 
@@ -305,13 +358,23 @@ var res = validator({ due_date: null, status: 'inactive' });
 console.log( res.message) //validation passed
 
 var res = validator({ due_date: null, status: 'active' })
-console.log( res.message) //due_date is required</code></pre>
+console.log( res.message) //due_date is required</code></pre></div>
 						</section>
-            <!--//section-->
             <section class="docs-section" id="same">
               <h2 class="section-heading">Same</h2>
               <p>If you want to variables to have same value you can use `same` (like confirm_passowrd).</p>
-              <p style="color:red">*Note: does not works with array or object</p>              
+              <p style="color:red">*Note: does not works with array or object</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('same', 'show')" id="same-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('same', 'hide')" id="same-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">confirm_passowrd: 'same:password'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not equal to :first_value</code></pre>
+
+              <div id="same-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ confirm_passowrd: 'same:password' })
 
@@ -319,46 +382,7 @@ var res = validator({ password : 'strong', confirm_passowrd: 'strong' });
 console.log( res.message) //validation passed
 
 var res = validator({ password : 'strong', confirm_passowrd: 'week' });
-console.log( res.message) //confirm_passowrd is not equal to password</code></pre>
-            </section>
-            <!--//section-->
-            <section class="docs-section" id="array">
-              <h2 class="section-heading">Array</h2>
-              <p>This tells the validator to get into a array and validate its items. Multidimensional nesting is also supported.</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validator = parser({ '*emailTo': ["email"] })
-
-var res = validator({ emailTo: ["bsp@gmail.com"] });
-
-console.log( res.message) //validation passed</code></pre>
-            </section>
-            <section class="docs-section" id="array">
-              <h2 class="section-heading">Object</h2>
-              <p>If you want to validate items in Object, use this.</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validator = parser({
-  {
-    name: 'required'
-    'address': {
-      'colony': "required",
-      'city': "required",
-      'pincode': "required",
-    }
-  }
-})
-
-var res = validator({
-  {
-    name: 'bhagyesh',
-    address: {
-      colony: "b-sector",
-      city: "pune",
-      pincode: 412115
-    }
-  }
-});
-
-console.log( res.message) //validation passed</code></pre>
+console.log( res.message) //confirm_passowrd is not equal to password</code></pre></div>
             </section>
           </article>
           <article class="docs-article" id="integer">
@@ -367,11 +391,21 @@ console.log( res.message) //validation passed</code></pre>
               <section class="docs-intro">
                 <p>Various validation for integer data types</p>
               </section>
-              <!--//docs-intro-->
             </header>
             <section class="docs-section" id="numeric">
               <h2 class="section-heading">Numeric</h2>
               <p>This validates that a string value contains a basic numeric value. for integers or float it returns true.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('numeric', 'show')" id="numeric-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('numeric', 'hide')" id="numeric-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">numb: 'numeric'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not number</code></pre>
+
+              <div id="numeric-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'numeric' })
 
@@ -379,11 +413,22 @@ var res = validator({ num: '-24.6778' });
 console.log( res.message) //validation passed
 
 var res = validator({ num: '-24. 6778'});
-console.log( res.message) //num is not number</code></pre>
+console.log( res.message) //num is not number</code></pre></div>
 						</section>
             <section class="docs-section" id="between">
               <h2 class="section-heading">Between</h2>
               <p>The field under validation must have a size between the given min and max.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('between', 'show')" id="between-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('between', 'hide')" id="between-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">numb: 'between:10,30'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable should be greater than :first_value and less than :second_value</code></pre>
+
+              <div id="between-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'between:10,30' })
 
@@ -391,11 +436,22 @@ var res = validator({ num: 10 });
 console.log( res.message) //validation passed
 
 var res = validator({ num: 9 });
-console.log( res.message) //num should be greater than 10 and less than 30</code></pre>
+console.log( res.message) //num should be greater than 10 and less than 30</code></pre></div>
             </section>
             <section class="docs-section" id="gt">
               <h2 class="section-heading">Greater Than</h2>
               <p>This will ensure that the value is greater than the parameter given.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('gt', 'show')" id="gt-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('gt', 'hide')" id="gt-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'gt:marks'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable should be greater than :first_value</code></pre>
+
+              <div id="gt-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'gt:marks' })
 var res = validator({ num: 10.1, marks: 10 });
@@ -403,11 +459,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ num: 'gt:10' })
 var res = validator({ num: 10 });
-console.log( res.message) //num should be greater than 10</code></pre>
+console.log( res.message) //num should be greater than 10</code></pre></div>
             </section>
             <section class="docs-section" id="gte">
               <h2 class="section-heading">Greater Than / Equals</h2>
               <p>This will ensure that the value is greater than or equals to the parameter given.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('gte', 'show')" id="gte-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('gte', 'hide')" id="gte-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'gte:10'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable should be greater than or equals to :first_value</code></pre>
+
+              <div id="gte-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'gte:10' })
 var res = validator({ num: 10 });
@@ -415,11 +482,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ num: 'gte:marks' })
 var res = validator({ num: 9, marks: 10 });
-console.log( res.message) //num should be greater than or equals to marks</code></pre>
+console.log( res.message) //num should be greater than or equals to marks</code></pre></div>
             </section>
             <section class="docs-section" id="lt">
               <h2 class="section-heading">Less Than</h2>
               <p>This will ensure that the value is less than the parameter given.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('lt', 'show')" id="lt-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('lt', 'hide')" id="lt-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'lt:marks'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable should be less than :first_value</code></pre>
+
+              <div id="lt-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'lt:marks' })
 var res = validator({ num: 9.1, marks: 10 });
@@ -427,11 +505,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ num: 'lt:10' })
 var res = validator({ num: 10 });
-console.log( res.message) //num should be less than 10</code></pre>
+console.log( res.message) //num should be less than 10</code></pre></div>
             </section>
             <section class="docs-section" id="lte">
               <h2 class="section-heading">Less Than / Equals</h2>
               <p>This will ensure that the value is less than or equals to the parameter given.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('lte', 'show')" id="lte-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('lte', 'hide')" id="lte-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'lte:10'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable should be less than or equals to :first_value</code></pre>
+
+              <div id="lte-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'lte:10' })
 var res = validator({ num: 10 });
@@ -439,11 +528,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ num: 'lte:marks' })
 var res = validator({ num: 10.1, marks: 10 });
-console.log( res.message) //num should be less than or equals to marks</code></pre>
+console.log( res.message) //num should be less than or equals to marks</code></pre></div>
             </section>
             <section class="docs-section" id="odd">
               <h2 class="section-heading">Odd</h2>
               <p>Specifies the value must be an odd number.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('odd', 'show')" id="odd-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('odd', 'hide')" id="odd-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'odd'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not odd number</code></pre>
+
+              <div id="odd-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'odd' })
 
@@ -451,11 +551,22 @@ var res = validator({ num: 9 });
 console.log( res.message) //validation passed
 
 var res = validator({ num: 30 });
-console.log( res.message) //num is not odd number</code></pre>
+console.log( res.message) //num is not odd number</code></pre></div>
             </section>
             <section class="docs-section" id="even">
               <h2 class="section-heading">Even</h2>
               <p>Specifies the value must be an even number.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('even', 'show')" id="even-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('even', 'hide')" id="even-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">num: 'even'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not even number</code></pre>
+
+              <div id="even-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ num: 'even' })
 
@@ -463,16 +574,26 @@ var res = validator({ num: 8 });
 console.log( res.message) //validation passed
 
 var res = validator({ num: 31 });
-console.log( res.message) //num is not even number</code></pre>
+console.log( res.message) //num is not even number</code></pre></div>
             </section>
           </article>
           <article class="docs-article" id="boolean">
             <header class="docs-header">
               <h1 class="docs-heading" style="margin-bottom: 0rem !important;">Boolean</h1>
-              <!--//docs-intro-->
             </header>
             <section class="docs-section">
               <p>Check that given input is boolean</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('boolean', 'show')" id="boolean-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('boolean', 'hide')" id="boolean-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">is_active: 'boolean'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not boolean</code></pre>
+
+              <div id="boolean-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ is_active: 'boolean' })
 
@@ -480,7 +601,7 @@ var res = validator({ is_active: 'false' });
 console.log( res.message) //validation passed
 
 var res = validator({is_active: 'fdalse'});
-console.log( res.message) //is_active is not boolean</code></pre>
+console.log( res.message) //is_active is not boolean</code></pre></div>
             </section>
           </article>
           <article class="docs-article" id="date">
@@ -489,11 +610,21 @@ console.log( res.message) //is_active is not boolean</code></pre>
               <section class="docs-intro">
                 <p>Various validation for date data types</p>
               </section>
-              <!--//docs-intro-->
             </header>
             <section class="docs-section">
               <h2 class="section-heading">Date</h2>
               <p>Check that given input is date</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('date', 'show')" id="date-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('date', 'hide')" id="date-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">datecolumn: 'date'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not in date format</code></pre>
+
+              <div id="date-example" class="hide">
+                <p class="mb-0">Example:</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ datecolumn: 'date' })
 
@@ -501,11 +632,24 @@ var res = validator({ datecolumn : new Date() });
 console.log( res.message) //validation passed
 
 var res = validator({ datecolumn : 'dmsk' });
-console.log( res.message) //datecolumn is not in date format</code></pre>
+console.log( res.message) //datecolumn is not in date format</code></pre></div>
 						</section>
             <section class="docs-section" id="after">
               <h2 class="section-heading">After</h2>
-              <p>The field under validation must be a value after a given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
+              <p>The field under validation must be a value after a given date. Instead of passing a date string, you can specify another field or `today`, `tomorrow`, `yesterday` to compare against the date.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('after', 'show')" id="after-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('after', 'hide')" id="after-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">datecolumn: 'after:yesterday', //today, yesterday also can be used here
+datecolumn_two: 'after:datecolumn',
+datecolumn_three: 'after:2020-04-25'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not after :first_value</code></pre>
+
+              <div id="after-example" class="hide">
+                <p class="mb-0">Example:</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ datecolumn: 'after:yesterday' })
 var res = validator({ datecolumn : new Date() });
@@ -529,11 +673,24 @@ console.log( res.message) //datecolumn is not after 2022-09-10
 
 var validator = parser({ datecolumn: 'after:created_at' })
 var res = validator({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
-console.log( res.message) //datecolumn is not after created_at</code></pre>
+console.log( res.message) //datecolumn is not after created_at</code></pre></div>
 						</section>
             <section class="docs-section" id="after-or-equals">
               <h2 class="section-heading">After or Equals</h2>
-              <p>The field under validation must be a value after or equal to the given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
+              <p>The field under validation must be a value after or equal to the given date. Instead of passing a date string, you can specify another field or `today`, `tomorrow`, `yesterday` to compare against the date.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('after-or-equals', 'show')" id="after-or-equals-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('after-or-equals', 'hide')" id="after-or-equals-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">datecolumn: 'after_or_equals:yesterday', //today, yesterday also can be used here
+datecolumn_two: 'after_or_equals:datecolumn',
+datecolumn_three: 'after_or_equals:2020-04-25'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not after or equals to :first_value</code></pre>
+
+              <div id="after-or-equals-example" class="hide">
+                <p class="mb-0">Example:</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ datecolumn: 'after_or_equals:yesterday' })
 var res = validator({ datecolumn : new Date() });
@@ -563,11 +720,24 @@ console.log( res.message) //datecolumn is not after or equals to 2022-09-10
 
 var validator = parser({ datecolumn: 'after_or_equals:created_at' })
 var res = validator({ datecolumn : '2022-09-09', created_at: '2022-09-10' });
-console.log( res.message) //datecolumn is not after or equals to created_at</code></pre>
+console.log( res.message) //datecolumn is not after or equals to created_at</code></pre></div>
 						</section>
             <section class="docs-section" id="before">
               <h2 class="section-heading">Before</h2>
-              <p>The field under validation must be a value before a given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
+              <p>The field under validation must be a value before a given date. Instead of passing a date string, you can specify another field or `today`, `tomorrow`, `yesterday` to compare against the date.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('before', 'show')" id="before-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('before', 'hide')" id="before-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">datecolumn: 'before:yesterday', //today, yesterday also can be used here
+datecolumn_two: 'before:datecolumn',
+datecolumn_three: 'before:2020-04-25'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not before :first_value</code></pre>
+
+              <div id="before-example" class="hide">
+                <p class="mb-0">Example:</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ datecolumn: 'before:tomorrow' })
 var res = validator({ datecolumn : new Date() });
@@ -591,11 +761,24 @@ console.log( res.message) //datecolumn is not before 2022-09-10
 
 var validator = parser({ datecolumn: 'before:created_at' })
 var res = validator({ datecolumn : '2022-09-10', created_at: '2022-09-10' });
-console.log( res.message) //datecolumn is not before created_at</code></pre>
+console.log( res.message) //datecolumn is not before created_at</code></pre></div>
 						</section>
             <section class="docs-section" id="before-or-equals">
               <h2 class="section-heading">Before or Equals</h2>
-              <p>The field under validation must be a value before or equal to the given date. Instead of passing a date string, you can specify another field or `today,tomorrow,yesterday` to compare against the date.</p>
+              <p>The field under validation must be a value before or equal to the given date. Instead of passing a date string, you can specify another field or `today`, `tomorrow`, `yesterday` to compare against the date.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('before-or-equals', 'show')" id="before-or-equals-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('before-or-equals', 'hide')" id="before-or-equals-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">datecolumn: 'before_or_equals:yesterday', //today, yesterday also can be used here
+datecolumn_two: 'before_or_equals:datecolumn',
+datecolumn_three: 'before_or_equals:2020-04-25'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is not before or equals to :first_value</code></pre>
+
+              <div id="before-or-equals-example" class="hide">
+                <p class="mb-0">Example:</p>
               <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ datecolumn: 'before_or_equals:tomorrow' })
 var res = validator({ datecolumn : new Date() });
@@ -625,7 +808,7 @@ console.log( res.message) //datecolumn is not before or equals to 2022-09-10
 
 var validator = parser({ datecolumn: 'before_or_equals:created_at' })
 var res = validator({ datecolumn : '2022-09-11', created_at: '2022-09-10' });
-console.log( res.message) //datecolumn is not before or equals to created_at</code></pre>
+console.log( res.message) //datecolumn is not before or equals to created_at</code></pre></div>
 						</section>
           </article>
           <article class="docs-article" id="string">
@@ -634,11 +817,21 @@ console.log( res.message) //datecolumn is not before or equals to created_at</co
               <section class="docs-intro">
                 <p>Various validation for string data types</p>
               </section>
-              <!--//docs-intro-->
             </header>
             <section class="docs-section" id="min">
               <h2 class="section-heading">Min</h2>
               <p>For strings, it checks that the string length is at least that number of characters.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('min', 'show')" id="min-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('min', 'hide')" id="min-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">password: 'min:6'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable's length is less than :first_value</code></pre>
+
+              <div id="min-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ password: 'min:6' })
 var res = validator({ password : 'passing' });
@@ -646,11 +839,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ password: 'min:8' })
 var res = validator({password : 'passing'});
-console.log( res.message) //password's length is less than 8</code></pre>
+console.log( res.message) //password's length is less than 8</code></pre></div>
 						</section>
             <section class="docs-section" id="max">
               <h2 class="section-heading">Max</h2>
               <p>For strings, it checks that the string length is at most that number of characters.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('mix', 'show')" id="mix-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('mix', 'hide')" id="mix-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">passport_number: 'max:20'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable's length is greater than :first_value</code></pre>
+
+              <div id="mix-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ password: 'max:8' })
 var res = validator({ password : 'passing' });
@@ -658,11 +862,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ password: 'max:6' })
 var res = validator({password : 'passing'});
-console.log( res.message) //password's length is greater than 6</code></pre>
+console.log( res.message) //password's length is greater than 6</code></pre></div>
 						</section>
             <section class="docs-section" id="size">
               <h2 class="section-heading">Size</h2>
               <p>For strings, it checks that the string length is exactly that number of characters. For slices, arrays, and maps, validates the number of items.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('size', 'show')" id="size-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('size', 'hide')" id="size-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">phone_number: 'size:10'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable's length not equal to :first_value</code></pre>
+
+              <div id="size-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ password: 'size:7' })
 var res = validator({ password : 'passing' });
@@ -670,23 +885,45 @@ console.log( res.message) //validation passed
 
 var validator = parser({ password: 'size:6' })
 var res = validator({password : 'passing'});
-console.log( res.message) //password's length not equal to 6</code></pre>
+console.log( res.message) //password's length not equal to 6</code></pre></div>
 						</section>
             <section class="docs-section" id="in">
               <h2 class="section-heading">In</h2>
               <p>For strings, `in` will ensure that the value is one of the values in the parameter. The parameter should be a list of values separated by comma `,`. Values must be strings.</p>
-							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
-<code class="language-javascript">var validator = parser({ password: 'in:passing,failing' })
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('in', 'show')" id="in-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('in', 'hide')" id="in-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'in:active,disable'</code></pre>
 
-var res = validator({ password : 'passing' });
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable's value is not in array</code></pre>
+
+              <div id="in-example" class="hide">
+                <p class="mb-0">Example:</p>
+							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validator = parser({ status: 'in:active,disable' })
+
+var res = validator({ status : 'active' });
 console.log( res.message) //validation passed
 
-var res = validator({password : 'pass'});
-console.log( res.message) //password's value is not in array</code></pre>
+var res = validator({status : 'on'});
+console.log( res.message) //status's value is not in array</code></pre></div>
 						</section>
             <section class="docs-section" id="not-in">
               <h2 class="section-heading">Not In</h2>
               <p>For strings, `not_in` will ensure that the value is not one of the values in the parameter. The parameter should be a list of values separated by comma `,`. Values must be strings.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('not-in', 'show')" id="not-in-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('not-in', 'hide')" id="not-in-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'not_in:inactive,delete'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable's value is in invalid array</code></pre>
+
+              <div id="not-in-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'not_in:inactive,delete' })
 
@@ -694,11 +931,22 @@ var res = validator({ status : 'active' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'inactive' });
-console.log( res.message) //status's value is in invalid array</code></pre>
+console.log( res.message) //status's value is in invalid array</code></pre></div>
 						</section>
             <section class="docs-section" id="email">
               <h2 class="section-heading">Email</h2>
               <p>This validates that a string value contains a valid email.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('email', 'show')" id="email-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('email', 'hide')" id="email-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">email_address: 'email'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable is invalid</code></pre>
+
+              <div id="email-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ email: 'email' })
 
@@ -706,11 +954,23 @@ var res = validator({ email : 'gisueinc@gmail.com' });
 console.log( res.message) //validation passed
 
 var res = validator({ email : 'dmsk' });
-console.log( res.message) //email is invalid</code></pre>
+console.log( res.message) //email is invalid</code></pre></div>
 						</section>
             <section class="docs-section" id="alpha">
               <h2 class="section-heading">Alphabetic</h2>
               <p>This validates that a string value contains ASCII alpha characters only, as well as dashes, spaces and underscores.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('alpha', 'show')" id="alpha-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('alpha', 'hide')" id="alpha-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">:variable does not match alpha</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">name: 'alpha',
+title: 'alpha:dashes,spaces,underscores'//any of this extra params can be added</code></pre>
+
+              <div id="alpha-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ name: 'alpha' })
 var res = validator({ name : 'bhagyesh' });
@@ -722,11 +982,23 @@ console.log( res.message) //validation passed
 
 var validator = parser({ name: 'alpha' })
 var res = validator({ name : 'bhagy _e-sh10' });
-console.log( res.message) //name does not match alpha</code></pre>
+console.log( res.message) //name does not match alpha</code></pre></div>
 						</section>
             <section class="docs-section" id="alphanumeric">
               <h2 class="section-heading">Alpha-Numeric</h2>
               <p>The field under validation must be entirely alpha-numeric characters., as well as dashes, spaces and underscores.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('alphanumeric', 'show')" id="alphanumeric-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('alphanumeric', 'hide')" id="alphanumeric-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">name: 'alphanumeric',
+title: 'alphanumeric:dashes,spaces,underscores'//any of this extra params can be added</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not match alphanumeric</code></pre>
+
+              <div id="alphanumeric-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ name: 'alphanumeric' })
 var res = validator({ name : 'bhagyesh10' });
@@ -738,11 +1010,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ name: 'alphanumeric' })
 var res = validator({ name : 'bhagy _e-sh@10' });
-console.log( res.message) //name does not match alphanumeric</code></pre>
+console.log( res.message) //name does not match alphanumeric</code></pre></div>
 						</section>
             <section class="docs-section" id="uppercase">
               <h2 class="section-heading">Uppercase</h2>
               <p>The field under validation must be entirely uppercase characters, as well as dashes, spaces and underscores.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('uppercase', 'show')" id="uppercase-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('uppercase', 'hide')" id="uppercase-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">name: 'uppercase',
+title: 'uppercase:dashes,spaces,underscores'//any of this extra params can be added</code></pre>
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not match uppercase</code></pre>
+
+              <div id="uppercase-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ name: 'uppercase' })
 var res = validator({ name : 'BHAGYESH' });
@@ -754,11 +1037,23 @@ console.log( res.message) //validation passed
 
 var validator = parser({ name: 'uppercase' })
 var res = validator({ name : 'bhagy ESH' });
-console.log( res.message) //name does not match uppercase</code></pre>
+console.log( res.message) //name does not match uppercase</code></pre></div>
 						</section>
             <section class="docs-section" id="lowercase">
               <h2 class="section-heading">Lowercase</h2>
               <p>The field under validation must be entirely uppercase characters, as well as dashes, spaces and underscores.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('lowercase', 'show')" id="lowercase-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('lowercase', 'hide')" id="lowercase-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">name: 'lowercase',
+title: 'lowercase:dashes,spaces,underscores'//any of this extra params can be added</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not match lowercase</code></pre>
+
+              <div id="lowercase-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ name: 'lowercase' })
 var res = validator({ name : 'bhagyesh' });
@@ -770,11 +1065,22 @@ console.log( res.message) //validation passed
 
 var validator = parser({ name: 'lowercase' })
 var res = validator({ name : 'bhagy _e-sh10' });
-console.log( res.message) //name does not match lowercase</code></pre>
+console.log( res.message) //name does not match lowercase</code></pre></div>
 						</section>
             <section class="docs-section" id="starts-with">
               <h2 class="section-heading">Starts With</h2>
               <p>This validates that a string value starts with the supplied string value.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('starts-with', 'show')" id="starts-with-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('starts-with', 'hide')" id="starts-with-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'starts_with:inactive,delete'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not starts with :first_value</code></pre>
+
+              <div id="starts-with-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'starts_with:inactive,delete' })
 
@@ -782,11 +1088,22 @@ var res = validator({ status : 'inactive-world' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'active' });
-console.log( res.message) //status does not starts with inactive,delete</code></pre>
+console.log( res.message) //status does not starts with inactive,delete</code></pre></div>
 						</section>
             <section class="docs-section" id="starts-not-with">
               <h2 class="section-heading">Starts Not With</h2>
               <p>This validates that a string value does not starts with the supplied string value.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('starts-not-with', 'show')" id="starts-not-with-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('starts-not-with', 'hide')" id="starts-not-with-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'starts_not_with:inactive,delete'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does starts with :first_value</code></pre>
+
+              <div id="starts-not-with-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'starts_not_with:inactive,delete' })
 
@@ -794,11 +1111,22 @@ var res = validator({ status : 'active' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'delete' });
-console.log( res.message) //status does starts with delete</code></pre>
+console.log( res.message) //status does starts with delete</code></pre></div>
 						</section>
             <section class="docs-section" id="ends-with">
               <h2 class="section-heading">Ends With</h2>
               <p>This validates that a string value ends with the supplied string value.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('ends-with', 'show')" id="ends-with-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('ends-with', 'hide')" id="ends-with-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'ends_with:inactive,delete'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not ends with :first_value</code></pre>
+
+              <div id="ends-with-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'ends_with:inactive,delete' })
 
@@ -806,11 +1134,22 @@ var res = validator({ status : 'all-delete' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'all' });
-console.log( res.message) //status does not ends with inactive,delete</code></pre>
+console.log( res.message) //status does not ends with inactive,delete</code></pre></div>
 						</section>
             <section class="docs-section" id="ends-not-with">
               <h2 class="section-heading">Ends Not With</h2>
               <p>This validates that a string value does not ends with the supplied string value.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('ends-not-with', 'show')" id="ends-not-with-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('ends-not-with', 'hide')" id="ends-not-with-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'ends_not_with:inactive,delete'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does ends with ':first_value'</code></pre>
+
+              <div id="ends-not-with-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'ends_not_with:inactive,delete' })
 
@@ -818,11 +1157,22 @@ var res = validator({ status : 'status-active' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'isdelete' });
-console.log( res.message) //status does ends with 'delete'</code></pre>
+console.log( res.message) //status does ends with 'delete'</code></pre></div>
 						</section>
             <section class="docs-section" id="contains">
               <h2 class="section-heading">Contains</h2>
               <p>This validates that a string value contains the substring value, multiple values can be provided.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('contains', 'show')" id="contains-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('contains', 'hide')" id="contains-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'contains:in,not'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not contains ':first_value'</code></pre>
+
+              <div id="contains-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'contains:in,not' })
 
@@ -830,11 +1180,22 @@ var res = validator({ status : 'inot' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'nothng' });
-console.log( res.message) //status does not contains 'in'</code></pre>
+console.log( res.message) //status does not contains 'in'</code></pre></div>
 						</section>
             <section class="docs-section" id="contains-any">
               <h2 class="section-heading">Contains Any</h2>
               <p>This validates that a string value contains any in the substring value, multiple values can be provided.</p>
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('contains-any', 'show')" id="contains-any-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('contains-any', 'hide')" id="contains-any-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">status: 'contains_any:in,not'</code></pre>
+
+              <p class="mb-0">Error Message:</p>
+              <pre data-src="prism.js"><code class="language-javascript">:variable does not contains any of :first_value</code></pre>
+
+              <div id="contains-any-example" class="hide">
+                <p class="mb-0">Example:</p>
 							<pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
 <code class="language-javascript">var validator = parser({ status: 'contains_any:in,not' })
 
@@ -842,19 +1203,83 @@ var res = validator({ status : 'note' });
 console.log( res.message) //validation passed
 
 var res = validator({ status : 'betweenvalue' });
-console.log( res.message) //status does not contains any of in,not</code></pre>
+console.log( res.message) //status does not contains any of in,not</code></pre></div>
 						</section>
           </article>
 
-					<!--//docs-article-->
+          <article class="docs-article" id="array">
+            <header class="docs-header">
+              <h1 class="docs-heading">Array</h1>
+              <section class="docs-intro">
+                <p>This tells the validator to get into a array and validate its items. Multidimensional nesting is also supported.</p>
+              </section>
+            </header>
+            <section class="docs-section">
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('array', 'show')" id="array-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('array', 'hide')" id="array-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">'*emailTo': ["email"]</code></pre>
+
+              <div id="array-example" class="hide">
+                <p class="mb-0">Example:</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+  <code class="language-javascript">var validator = parser({ '*emailTo': ["email"] })
+  
+  var res = validator({ emailTo: ["bsp@gmail.com"] });
+  
+  console.log( res.message) //validation passed</code></pre></div>
+						</section>
+          </article>
+
+          <article class="docs-article" id="object">
+            <header class="docs-header">
+              <h1 class="docs-heading">Object</h1>
+              <section class="docs-intro">
+                <p>If you want to validate items in Object, use this.</p>
+              </section>
+            </header>
+            <section class="docs-section">
+              <p class="mb-0">Usage:
+                <a class="btn btn-primary right-button-a" onclick="toggle('object', 'show')" id="object-show-btn">show example</a>
+                <a class="btn btn-primary right-button-a hide" onclick="toggle('object', 'hide')" id="object-hide-btn">hide example</a>
+              </p>
+              <pre data-src="prism.js" class="language-javascript"><code class="language-javascript">'address': {
+  'city': "required",
+  'pincode': "required",
+}</code></pre>
+              <div id="object-example" class="hide">
+                <p class="mb-0">Example:</p>
+              <pre data-src="prism.js" class="language-javascript line-numbers" data-src-status="loaded" tabindex="0">
+<code class="language-javascript">var validator = parser({
+  name: 'required'
+  'address': {
+    'colony': "required",
+    'city': "required",
+    'pincode': "required",
+  }
+})
+
+var res = validator({
+  name: 'bhagyesh',
+  address: {
+    colony: "b-sector",
+    city: "pune",
+    pincode: 412115
+  }
+});
+
+console.log( res.message) //validation passed</code></pre></div>
+            </section>
+          </article>
+
           <footer class="footer">
             <div class="container text-center">
-              <small class="copyright">Template Copyright &copy; <a href="https://themes.3rdwavemedia.com/" target="_blank">3rd Wave Media</a></small>
               <ul class="social-list list-unstyled pt-4 mb-0">
                 <li class="list-inline-item"><a href="https://github.com/uzrnem/smooth-validator"><i class="fab fa-github fa-fw"></i></a></li>
                 <li class="list-inline-item"><a href="https://www.npmjs.com/package/smooth-validator"><i class="fab fa-npm fa-fw"></i></a></li>
               </ul>
-              <!--//social-list-->
+              <a class="copyright right-button-a" href="https://themes.3rdwavemedia.com/" target="_blank" style="color:#aeffc2;">Template Copyright &copy; 3rd Wave Media</a>
             </div>
           </footer>
         </div>
@@ -862,6 +1287,29 @@ console.log( res.message) //status does not contains any of in,not</code></pre>
     </div>
     <script src="./assets/prism.js"></script>
     <script src="./assets/js/smoothscroll.min.js"></script>
-    <script src="./assets/js/docs.js"></script> 
+    <script src="./assets/js/docs.js"></script>
+    <script>
+function toggle(section, status) {
+  if (status == 'show') {
+    addClass(section + '-show-btn', 'hide')
+    removeClass(section + '-hide-btn', 'hide')
+    removeClass(section + '-example', 'hide')
+  } else {
+    removeClass(section + '-show-btn', 'hide')
+    addClass(section + '-hide-btn', 'hide')
+    addClass(section + '-example', 'hide')
+  }
+}
+
+function addClass(idVal, className) {
+    var element = document.getElementById(idVal);
+    element.classList.add(className);
+}
+
+function removeClass(idVal, className) {
+    var element = document.getElementById(idVal);
+    element.classList.remove(className);
+}
+    </script>
   </body>
 </html>
