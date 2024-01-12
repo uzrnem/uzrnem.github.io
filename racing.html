@@ -114,6 +114,9 @@ function init() {
 
 
 function moveUp() {
+    if (status != "start") {
+        return;
+    }
     for (c = 0 ; c < 5; c++) {
         offPixel(0, (c*5 + roadWallPosition)%20);
         offPixel(9, (c*5 + roadWallPosition)%20);
