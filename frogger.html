@@ -1,0 +1,291 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script.js"></script>
+</head>
+<body>
+    <div id="gamepanel"></div>
+</body>
+<script>
+
+function setupFroggerGameScreen() {
+    const containerDiv = document.createElement("div");
+    const table = document.createElement("table");
+    for (var yc = 0; yc < 11; yc++) {
+        if (yc > 1) {
+            const tr = document.createElement("tr");
+            for (var xc = 0; xc < 10; xc++) {
+                const td = document.createElement("td");
+                const span = document.createElement("span");
+                span.className = "active";
+                td.appendChild(span);
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+        const tr = document.createElement("tr");
+        for (var xc = 0; xc < 10; xc++) {
+            const td = document.createElement("td");
+            const span = document.createElement("span");
+            span.id = `pixel_${xc}_${yc}`;
+            td.appendChild(span);
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+    containerDiv.appendChild(table);
+    return containerDiv;
+}
+
+function setupFroggerGamePanel(name) {
+    document.title = name + " | Bricks Game";
+    const gamePanelDiv = document.getElementById("gamepanel");
+    gamePanelDiv.appendChild(setupFroggerGameScreen());
+
+    gamePanelDiv.appendChild(setupResultScreen(name));
+
+    for (const audio of audios) {
+        const srcTag = document.createElement("source");
+        srcTag.src = audio.src;
+        srcTag.type = "audio/ogg";
+        const audioTag = document.createElement("audio");
+        audioTag.id = audio.id;
+        audioTag.appendChild(srcTag);
+        document.body.appendChild(audioTag);
+    }
+}
+setupFroggerGamePanel("Frogger");
+
+var speed = null;
+var score = 0;
+var level = 1;
+var timer = null;
+var status = null;
+var speeders = null;
+var lineSlideIndex = 0;
+var screen = null;
+var hero = null;
+
+var lines = [
+    [1, 1, 0, 0, 0, 0, 0, 1], //5s*3i , 2i*5s*1i
+    [1, 0, 0, 0, 0, 1, 1, 1], //4s*4i , i*4s*3i
+    [1, 1, 1, 0, 0, 0, 0, 1], //4s*4i , 3i*4s*i
+    [1, 0, 0, 0, 0, 1, 1, 1], //4s*4i , i*4s*3i
+    [0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1], //3s*1i*4s*2i*4s*2i
+    [1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1], //5s*5i*4s*2i , i*4s*2i*5s*4i
+    [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0], //5s*4i*5s*2i , 3s*2i*5s*4i*2s
+    [0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0]  //5s*4i*5s*2i , 2s*2i*5s*4i*3s
+]
+
+document.getElementById("restartbtn").onclick = reload;
+document.getElementById("pausebtn").onclick = pause;
+document.getElementById("resumebtn").onclick = resume;
+
+function getHero() {
+    return {x: 4, y: 10};
+}
+
+function refreshFullDisplay(hero, screen) {
+    for (var yc = 0; yc < 11; yc++) {
+        for (var xc = 0; xc < 10; xc++) {
+            if (screen[`y_${yc}`][`x_${xc}`] == 1) {
+                onPixel(xc, yc);
+            } else {
+                offPixel(xc, yc);
+            }
+        }
+    }
+    onFoodPixel(hero.x, hero.y);
+}
+
+function isGameOver(hero, screen) {
+    if (screen[`y_${hero.y}`][`x_${hero.x}`] == 1) {
+        document.getElementById("message").innerText = "Game Over..!";
+        document.getElementById("gameover").play();
+        status = "stop";
+        clearInterval(timer);
+        timer = null;
+        return true;
+    }
+    return false;
+}
+
+function lineCreated(screen) {
+    var count = 0;
+    for (xc = 0; xc < 10; xc++) {
+        count += screen[`y_0`][`x_${xc}`];
+    }
+    if (count == 10) {
+        screen[`y_0`] = {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0};
+        for (xc = 0; xc < 10; xc++) {
+            offPixel(xc, 0);
+        }
+        level++;
+        document.getElementById("level").innerText = level;
+        speed = speed - speeders.shift();
+        clearInterval(timer);
+        timer = setInterval(moveUp, speed);
+        return true;
+    }
+    return false;
+}
+
+function move() {
+    for (yc = 0 ;yc < lines.length; yc++) {
+        for (xc = 0; xc < 10; xc++) {
+            screen[`y_${yc + 2}`][`x_${xc}`] = lines[yc][(xc + lineSlideIndex) % lines[yc].length];
+        }
+    }
+    console.log(lines)
+    /*
+    for (yc = 0 ;yc < lines.length; yc++) {
+        for (xc = 0; xc < 10; xc++) {
+            if (lines[yc][(xc) % lines[yc].length] == 0) {
+                offPixel(xc, yc);
+            } else {
+                onPixel(xc, yc);
+            }
+        }
+    }
+    */
+    if (isGameOver(hero, screen)) {
+        return;
+    }
+    lineSlideIndex++;
+    refreshFullDisplay(hero, screen)
+}
+
+function init() {
+    speed = 1500;
+    speeders = [300, 200, 100, 50];
+    level = 0;
+    score = 0;
+    status = "start";
+    lineSlideIndex = 0;
+    screen = {
+        y_0: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_1: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_2: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_3: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_4: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_5: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_6: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_7: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_8: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_9: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+        y_10: {x_0: 0, x_1: 0, x_2: 0, x_3: 0, x_4: 0, x_5: 0, x_6: 0, x_7: 0, x_8: 0, x_9: 0},
+    };
+    document.getElementById("level").innerText = level;
+    document.getElementById("score").innerText = score;
+    document.getElementById("message").innerText = "Game Started..!";
+    document.getElementById("pause").style = "";
+    document.getElementById("resume").style = "display: none;";
+    hero = getHero();
+    refreshFullDisplay(hero, screen);
+    if (timer == null) {
+        timer = setInterval(move, speed);
+    }
+}
+
+function pause() {
+    if (status == "start") {
+        status = "pause";
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("message").innerText = "Game Paused..!";
+        document.getElementById("pause").style = "display: none;";
+        document.getElementById("resume").style = "";
+    }
+}
+
+function resume() {
+    if (status == "pause") {
+        status = "start";
+        timer = setInterval(move, speed);
+        document.getElementById("message").innerText = "Game Resumed..!";
+        document.getElementById("pause").style = "";
+        document.getElementById("resume").style = "display: none;";
+    }
+}
+
+
+function moveUp() {
+    if (status != "start" || hero == null || hero.y == 0 || ( hero.y == 1 && screen[`y_${hero.y - 1 }`][`x_${hero.x}`] == 1)) {
+        return;
+    }
+    offPixel(hero.x, hero.y);
+    hero.y = hero.y - 1;
+    if (hero.y == 0) {
+        screen[`y_0`][`x_${hero.x}`] = 1;
+        onPixel(hero.x, hero.y);
+        score++;
+        document.getElementById("score").innerText = score;
+        document.getElementById("rotate").play();
+        hero = getHero();
+    }
+    if (lineCreated(screen)) {
+        document.getElementById("speedup").play();
+    }
+    onFoodPixel(hero.x, hero.y);
+    isGameOver(hero, screen);
+}
+
+function moveLeft() {
+    if (status != "start" || hero == null || hero.x == 0) {
+        return;
+    }
+    offPixel(hero.x, hero.y);
+    hero.x = hero.x - 1;
+    document.getElementById("move").play();
+    onFoodPixel(hero.x, hero.y);
+    isGameOver(hero, screen);
+}
+
+function moveRight() {
+    if (status != "start" || hero == null || hero.x == 9) {
+        return;
+    }
+    offPixel(hero.x, hero.y);
+    hero.x = hero.x + 1;
+    document.getElementById("move").play();
+    onFoodPixel(hero.x, hero.y);
+    isGameOver(hero, screen);
+}
+
+function moveDown() {
+    if (status != "start" || hero == null || hero.y == 10) {
+        return;
+    }
+    offPixel(hero.x, hero.y);
+    hero.y = hero.y + 1;
+    document.getElementById("move").play();
+    onFoodPixel(hero.x, hero.y);
+    isGameOver(hero, screen);
+}
+
+function reload() {
+    init();
+    move();
+}
+
+setupKeyUpListener(
+    reload, // ReloadKey
+    () => {
+        if (status == "start") {
+            pause();
+        } else if (status == "pause") {
+            resume();
+        }
+    }, // SpaceKey
+    moveUp,
+    moveDown,
+    moveLeft,
+    moveRight
+)
+
+init();
+move();
+</script>
+</html>
