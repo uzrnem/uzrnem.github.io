@@ -12,7 +12,7 @@ const buttons = [
 ];
 
 const links = [
-    {id: "snake", name: "Snake", url: "./snake.html"},
+    {id: "snake", name: "Snake", url: "./index.html"},
     {id: "tetris", name: "Tetris", url: "./tetris.html"},
     {id: "frogger", name: "Frogger", url: "./frogger.html"},
     {id: "tank", name: "Tank", url: "./tank.html"},
