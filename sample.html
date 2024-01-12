@@ -1,0 +1,106 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script.js"></script>
+</head>
+<body>
+    <div id="gamepanel"></div>
+</body>
+<script>
+
+setupGamePanel("Sample");
+
+var speed = null;
+var score = 0;
+var level = 1;
+var timer = null;
+var status = null;
+var speeders = [40, 30, 20, 10, 10, 5];
+
+document.getElementById("restartbtn").onclick = init;
+document.getElementById("pausebtn").onclick = pause;
+document.getElementById("resumebtn").onclick = resume;
+
+function move() {
+    console.log("move");
+}
+
+function init() {
+    speed = 300;
+    level = 0;
+    score = 0;
+    status = "start";
+    document.getElementById("level").innerText = level;
+    document.getElementById("score").innerText = score;
+    document.getElementById("message").innerText = "Game Started..!";
+    document.getElementById("pause").style = "";
+    document.getElementById("resume").style = "display: none;";
+    if (timer == null) {
+        timer = setInterval(move, speed);
+    }
+}
+
+function pause() {
+    if (status == "start") {
+        status = "pause";
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("message").innerText = "Game Paused..!";
+        document.getElementById("pause").style = "display: none;";
+        document.getElementById("resume").style = "";
+    }
+}
+
+function resume() {
+    if (status == "pause") {
+        status = "start";
+        timer = setInterval(move, speed);
+        document.getElementById("message").innerText = "Game Resumed..!";
+        document.getElementById("pause").style = "";
+        document.getElementById("resume").style = "display: none;";
+    }
+}
+
+
+function moveUp() {
+    console.log("up");
+}
+
+function moveLeft() {
+    console.log("left");
+}
+
+function moveRight() {
+    console.log("right");
+}
+
+function moveDown() {
+    console.log("down");
+    document.getElementById("level").innerText = level;
+    speed = speed - speeders.shift();
+    console.log("138 level", level, ", speed", speed);
+    clearInterval(timer);
+    timer = setInterval(moveUp, speed);
+}
+
+setupKeyUpListener(
+    init, // ReloadKey
+    () => {
+        if (status == "start") {
+            pause();
+        } else if (status == "pause") {
+            resume();
+        }
+    }, // SpaceKey
+    moveUp,
+    moveDown,
+    moveLeft,
+    moveRight
+)
+
+init();
+
+</script>
+</html>
