@@ -16,7 +16,8 @@ const links = [
     {id: "tetris", name: "Tetris", url: "./tetris.html"},
     {id: "frogger", name: "Frogger", url: "./frogger.html"},
     {id: "tank", name: "Tank [Beta]", url: "./tank.html"},
-    {id: "racing", name: "Racing", url: "./racing.html"}
+    {id: "racing", name: "Racing", url: "./racing.html"},
+    {id: "pushbox", name: "Pushbox", url: "./pushbox.html"}
 ]
 
 const audios = [
