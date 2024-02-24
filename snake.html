@@ -1,0 +1,201 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script.js"></script>
+</head>
+<body>
+    <div id="gamepanel"></div>
+</body>
+<script>
+
+setupGamePanel("Snake");
+
+function isTouchedSnakeBody(x, y, snakeBody) {
+    for (var i = 0; i < snakeBody.length -1; i++) {
+        if (snakeBody[i].x == x && snakeBody[i].y == y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function generateNewFood(snakeBody) {
+    if (availableCords == null) {
+        availableCords = [];
+        for (var xc = 0; xc < 10; xc++) {
+            for (var yc = 0; yc < 20; yc++) {
+                availableCords.push({ x: xc, y: yc });
+            }
+        }
+        availableCords.sort(() => Math.random() - 0.5 );
+    }
+    while (availableCords.length > 1) {
+        var cord = availableCords.shift();
+        if (!isTouchedSnakeBody(cord.x, cord.y, snakeBody)) {
+            return cord
+        } else {
+            availableCords.push(cord);
+        }
+    }
+    return null;
+}
+
+var speed = null;
+var snake = null;
+var direction = null;
+var keyCode = null
+var score = 0;
+var level = 1;
+var food = null;
+var timer = null;
+var status = null;
+var availableCords = null;
+var speeders = null;
+
+document.getElementById("restartbtn").onclick = init;
+document.getElementById("pausebtn").onclick = pause;
+document.getElementById("resumebtn").onclick = resume;
+
+function move() {
+    direction = keyCode;
+    var oldHead = snake[0];
+    var newHead = {};
+    if (direction == "up") {
+        newHead = { x: oldHead.x, y: (oldHead.y - 1 + 20 ) % 20 }
+    } else if (direction == "down") {
+        newHead = { x: oldHead.x, y: (oldHead.y + 1 + 20 ) % 20 }
+    } else if (direction == "left") {
+        newHead = { x: (oldHead.x - 1 + 10 ) % 10, y: oldHead.y }
+    } else if (direction == "right") {
+        newHead = { x: (oldHead.x + 1 + 10 ) % 10, y: oldHead.y }
+    }
+    if (isTouchedSnakeBody(newHead.x, newHead.y, snake)) {
+        document.getElementById("message").innerText = "Game Over..!";
+        status = "stop";
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("gameover").play();
+        return;
+    }
+    if (newHead.x == food.x && newHead.y == food.y) {
+        score += 1;
+        document.getElementById("rotate").play();
+        if (score % 5 == 0 && speeders.length > 0) {
+            level++;
+            document.getElementById("level").innerText = level;
+            if (speeders.length > 0) {
+                speed = speed - speeders.shift();
+                clearInterval(timer);
+                timer = setInterval(move, speed);
+            }
+        }
+        document.getElementById("score").innerText = score;
+        food = generateNewFood(snake);
+        if (food == null || score >= 194) {
+            document.getElementById("message").innerText = "You Won..!";
+            status = "stop";
+            clearInterval(timer);
+            timer = null;
+            return;
+        }
+        console.debug(food)
+    } else {
+        var last = snake.pop()
+        offPixel(last.x, last.y);
+    }
+    console.debug(`pixel_${newHead.x}_${newHead.y}`, newHead);
+    onPixel(newHead.x, newHead.y);
+    onFoodPixel(food.x, food.y);
+    snake.unshift(newHead);
+}
+
+function init() {
+    snake = [{
+        x: 0,
+        y: 0
+    }];
+    speed = 300;
+    speeders = [40, 30, 20, 10, 10, 5];
+    direction = "right";
+    keyCode = "right";
+    status = "start";
+    score = 0;
+    level = 1;
+    food = generateNewFood(snake);
+    for (var xc = 0; xc < 10; xc++) {
+        for (var yc = 0; yc < 20; yc++) {
+            offPixel(xc, yc);
+        }
+    }
+    document.getElementById("level").innerText = level;
+    document.getElementById("score").innerText = score;
+    onPixel(0, 0);
+    onFoodPixel(food.x, food.y);
+    document.getElementById("message").innerText = "Game Started..!";
+    document.getElementById("pause").style = "";
+    document.getElementById("resume").style = "display: none;";
+    if (timer == null) {
+        timer = setInterval(move, speed);
+    }
+}
+
+function pause() {
+    if (status == "start") {
+        status = "pause";
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("message").innerText = "Game Paused..!";
+        document.getElementById("pause").style = "display: none;";
+        document.getElementById("resume").style = "";
+        document.getElementById("point").play();
+    }
+}
+
+function resume() {
+    if (status == "pause") {
+        status = "start";
+        timer = setInterval(move, speed);
+        document.getElementById("message").innerText = "Game Resumed..!";
+        document.getElementById("pause").style = "";
+        document.getElementById("resume").style = "display: none;";
+        document.getElementById("point").play();
+    }
+}
+
+setupKeyUpListener(
+    init, // ReloadKey
+    () => {
+        if (status == "start") {
+            pause();
+        } else if (status == "pause") {
+            resume();
+        }
+    }, // SpaceKey
+    () => {
+        if (direction != "down") {
+            keyCode = "up";
+        }
+    }, // UpKey
+    () => {
+        if (direction != "up") {
+            keyCode = "down";
+        }
+    }, // DownKey
+    () => {
+        if (direction != "right") {
+            keyCode = "left";
+        }
+    }, // LeftKey
+    () => {
+        if (direction != "left") {
+            keyCode = "right";
+        }
+    } // RightKey
+)
+
+init();
+
+</script>
+</html>

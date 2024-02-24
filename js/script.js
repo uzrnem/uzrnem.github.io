@@ -12,12 +12,11 @@ const buttons = [
 ];
 
 const links = [
-    {id: "snake", name: "Snake", url: "./index.html"},
+    {id: "snake", name: "Snake", url: "./snake.html"},
     {id: "tetris", name: "Tetris", url: "./tetris.html"},
     {id: "frogger", name: "Frogger", url: "./frogger.html"},
     {id: "tank", name: "Tank [Beta]", url: "./tank.html"},
-    {id: "racing", name: "Racing", url: "./racing.html"},
-    {id: "pushbox", name: "Pushbox", url: "./pushbox.html"}
+    {id: "racing", name: "Racing", url: "./racing.html"}
 ]
 
 const audios = [
